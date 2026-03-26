@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:loader_overlay/loader_overlay.dart';
-
-import 'home_screen.dart';
 import 'constants/constants.dart';
 import 'constants/ui_constants.dart';
 
@@ -18,7 +16,7 @@ class ProxyNormalVotePage extends StatefulWidget {
   final String resolution;
   final String resolutionSEQ;
   final String proxyNumber;
-  // final String responseMessage;
+
   const ProxyNormalVotePage({
     Key? key,
     required this.cdsString,
@@ -32,925 +30,829 @@ class ProxyNormalVotePage extends StatefulWidget {
   State<ProxyNormalVotePage> createState() => _ProxyNormalVotePageState();
 }
 
-class _ProxyNormalVotePageState extends State<ProxyNormalVotePage> {
-  TextEditingController voterController = TextEditingController();
-  String respRef = "";
-  String responseMessage = "";
+class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
+    with SingleTickerProviderStateMixin {
+  // ── UJE Brand Colors ──────────────────────────────────
+  static const Color ujeBlue = Color(0xFF1A5CB8);
+  static const Color ujeGold = Color(0xFFC9A227);
+  static const Color ujeLightBlue = Color(0xFFE8F0FB);
+  static const Color ujeBackground = Color(0xFFF4F6FB);
+  static const Color ujeDark = Color(0xFF1A2340);
 
-  //This is Handling data from the backend passing it to the frontend
-  //
-
-  String agmId = "";
-  String company = "";
-  String meetingInfo = "";
-  String cdsString = "";
   String responseVoteMessage = "";
-  String name = " ";
-  String cdsNo = "";
-  String shares = "";
-  String regStatus = " ";
-  String resolution1 = "";
-  List resolutions = [];
-  List nominees = [];
-  bool isVisible = false;
-  String nomineeName = "";
-  List orderNumbers = [];
-  List resolutionNumbers = [];
-  String voteCode = "";
-  int onSelected = 0;
-
-  String resolutionSEQ = "";
-  String proxyNumber = "";
+  String cdsString = "";
   String vote = "";
-  String shareholder = "";
-
   List<ShareholderModel> shareholders = [];
   List<CandidateModel> candidates = [];
   ProxyVoterModel proxyVoterModel = ProxyVoterModel();
-
-  String resolutionText = "";
-  String resolutionNo = "";
-  String cardState = "";
-
   String voteStatus = "";
+  String respRef = "";
+
+  late AnimationController _animController;
+  late Animation<double> _fadeAnim;
 
   @override
   void initState() {
-    context.loaderOverlay.show();
-    getShareholderList(widget.proxyNumber, widget.resNumber);
-    context.loaderOverlay.hide();
-
     super.initState();
-    voterController.addListener(() {
-      respRef = voterController.text;
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _fadeAnim =
+        CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.loaderOverlay.show();
+      getShareholderList(widget.proxyNumber, widget.resNumber);
     });
   }
 
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  // ── Helpers ───────────────────────────────────────────
+
+  void _showUjeToast(String msg) {
+    Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: ujeBlue,
+      textColor: Colors.white,
+      fontSize: 14.0,
+      timeInSecForIosWeb: 3,
+    );
+  }
+
+  // ── API Methods ───────────────────────────────────────
+
   getShareholderList(String proxyNumber, String resoNumber) async {
-    String shareholderListUrl =
-        "$baseApiUrl/getVoteProxyHolders";
-
-    debugPrint("PROXY NUMBER: $proxyNumber");
-
-    debugPrint("RESOLUTION: $resoNumber");
-
+    String shareholderListUrl = "$baseApiUrl/getVoteProxyHolders";
     final response = await http.post(
       Uri.parse(shareholderListUrl),
       body: {"ProxyCDSNo": proxyNumber, "ResNo": resoNumber},
     );
-
     if (response.statusCode == 200) {
       final responseJson = json.decode(response.body);
-
       if (responseJson[0]["responseCode"] == 4) {
-        debugPrint('SUCCESSFUL!!! \n $responseJson');
-        Fluttertoast.showToast(
-          msg: "${responseJson[0]["responseMessage"]}",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green[800],
-          textColor: Colors.white,
-          fontSize: 18.0,
-          timeInSecForIosWeb: 3,
-        );
-
+        _showUjeToast(responseJson[0]["responseMessage"]);
         setState(() {
-          responseVoteMessage = responseJson[0]["responseMessage"].toString();
+          responseVoteMessage =
+              responseJson[0]["responseMessage"].toString();
         });
-
-        context.loaderOverlay.hide();
       } else {
+        shareholders.clear();
         for (int i = 0; i < responseJson.length; i++) {
-          ShareholderModel shareholderModel =
-              ShareholderModel.fromJson(responseJson[i]);
-
-          shareholders.add(shareholderModel);
+          shareholders.add(ShareholderModel.fromJson(responseJson[i]));
         }
-        debugPrint(shareholders.toString());
-
-        setState(() {
-          resoNumber = responseJson[0]["resNo"].toString();
-          debugPrint("Giving Null:  $resoNumber");
-        });
-        context.loaderOverlay.hide();
+        setState(() {});
+        _animController.forward(from: 0);
       }
     } else {
-      debugPrint('Error failed to retrieve candidates');
-
-      context.loaderOverlay.hide();
+      debugPrint('Error failed to retrieve shareholders');
     }
     context.loaderOverlay.hide();
   }
 
-  handleNormalVote(String cdsNumber, String resNumber, String voteType) async {
-    String urlVoteNormalRes =
-        "$baseApiUrl/CommitVoteNormalRes";
-
-    debugPrint("CDS NUMBER $cdsNumber");
-
-    final response = await http.post(Uri.parse(urlVoteNormalRes), body: {
-      "CDSNo": cdsNumber,
-      "ResolutionNumber": resNumber,
-      "Vote": voteType
-    });
-
+  handleNormalVote(
+      String cdsNumber, String resNumber, String voteType) async {
+    String urlVoteNormalRes = "$baseApiUrl/CommitVoteNormalRes";
+    final response = await http.post(
+      Uri.parse(urlVoteNormalRes),
+      body: {
+        "CDSNo": cdsNumber,
+        "ResolutionNumber": resNumber,
+        "Vote": voteType
+      },
+    );
     final responseJson = json.decode(response.body);
     if (response.statusCode == 200) {
-      if (responseJson[0]["responseCode"] == 4) {
-        debugPrint('SUCCESSFUL!!! \n $responseJson');
-        Fluttertoast.showToast(
-          msg: "${responseJson[0]["responseMessage"]}",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green[800],
-          textColor: Colors.white,
-          fontSize: 18.0,
-          timeInSecForIosWeb: 3,
-        );
-
-        setState(() {
-          responseVoteMessage = responseJson[0]["responseMessage"].toString();
-        });
-
-        context.loaderOverlay.hide();
-      }
-      // ignore: avoid_print
-      voteStatus = responseJson[0]["responseMesssage"].toString();
-      debugPrint(" $responseJson");
-
-      Fluttertoast.showToast(
-        msg: "${responseJson[0]["responseMessage"]}",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green[800],
-        textColor: Colors.white,
-        fontSize: 18.0,
-        timeInSecForIosWeb: 3,
-      );
+      _showUjeToast(responseJson[0]["responseMessage"]);
       setState(() {
         voteStatus = responseJson[0]["responseMesssage"].toString();
       });
-      context.loaderOverlay.hide();
     } else {
-      Fluttertoast.showToast(
-        msg: "${responseJson[0]["responseMessage"]}",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green[800],
-        textColor: Colors.white,
-        fontSize: 18.0,
-        timeInSecForIosWeb: 3,
-      );
-      context.loaderOverlay.hide();
+      _showUjeToast(responseJson[0]["responseMessage"]);
     }
-    getShareholderList(widget.proxyNumber, widget.resNumber);
-
     context.loaderOverlay.hide();
+    getShareholderList(widget.proxyNumber, widget.resNumber);
   }
 
   handleNormalVoteAll(
       String resolutionSEQ, String proxyNumber, String voteType) async {
-    String urlVoteNormalResAll =
-        "$baseApiUrl/CommitVoteNormalResALL";
-
-    debugPrint(
-        "RESOLUTION SEQUENCE   $resolutionSEQ ::::: PROXY NUMBER $proxyNumber  ::::: VOTETYPE $voteType");
-
-    final response = await http.post(Uri.parse(urlVoteNormalResAll), body: {
-      "resSEQ": resolutionSEQ,
-      "ProxyCDS": proxyNumber,
-      "Vote": voteType
-    });
-
+    String urlVoteNormalResAll = "$baseApiUrl/CommitVoteNormalResALL";
+    final response = await http.post(
+      Uri.parse(urlVoteNormalResAll),
+      body: {
+        "resSEQ": resolutionSEQ,
+        "ProxyCDS": proxyNumber,
+        "Vote": voteType
+      },
+    );
     final responseJson = json.decode(response.body);
     if (response.statusCode == 200) {
-      if (responseJson[0]["responseCode"] == 4) {
-        debugPrint('SUCCESSFUL!!! \n $responseJson');
-        Fluttertoast.showToast(
-          msg: "${responseJson[0]["responseMessage"]}",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green[800],
-          textColor: Colors.white,
-          fontSize: 18.0,
-          timeInSecForIosWeb: 3,
-        );
-
-        setState(() {
-          responseVoteMessage = responseJson[0]["responseMessage"].toString();
-        });
-
-        context.loaderOverlay.hide();
-      }
-      // ignore: avoid_print
-      voteStatus = responseJson[0]["responseMesssage"].toString();
-      debugPrint(" $responseJson");
-
-      Fluttertoast.showToast(
-        msg: "${responseJson[0]["responseMessage"]}",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green[800],
-        textColor: Colors.white,
-        fontSize: 18.0,
-        timeInSecForIosWeb: 3,
-      );
+      _showUjeToast(responseJson[0]["responseMessage"]);
       setState(() {
         voteStatus = responseJson[0]["responseMesssage"].toString();
       });
-      context.loaderOverlay.hide();
     } else {
-      Fluttertoast.showToast(
-        msg: "${responseJson[0]["responseMessage"]}",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green[800],
-        textColor: Colors.white,
-        fontSize: 18.0,
-        timeInSecForIosWeb: 3,
-      );
-      context.loaderOverlay.hide();
+      _showUjeToast(responseJson[0]["responseMessage"]);
     }
-    getShareholderList(widget.proxyNumber, widget.resNumber);
     context.loaderOverlay.hide();
+    getShareholderList(widget.proxyNumber, widget.resNumber);
   }
+
+  // ── Build ─────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
-    String resNumber = widget.resNumber;
-    String resolution = widget.resolution;
-    String proxyNumber = widget.proxyNumber;
-    String resolutionSEQ = widget.resolutionSEQ;
-    setState(() {
-      voteCode = respRef;
-    });
-    final currentWidth = MediaQuery.of(context).size.width;
+    final String resNumber = widget.resNumber;
+    final String resolution = widget.resolution;
+    final String proxyNumber = widget.proxyNumber;
+    final String resolutionSEQ = widget.resolutionSEQ;
+
     return Scaffold(
+      backgroundColor: ujeBackground,
       appBar: AppBar(
-        title: const Text(" Normal Vote"),
-        leading: new IconButton(
-            icon: new Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Navigator.of(context).pop();
-              shareholders.clear();
-            }),
-      ),
-      body: currentWidth <= 540
-          ? SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          padding: const EdgeInsets.all(0.0),
-          child: Column(
-            children: [
-              Text(
-                resolution,
-                style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 21,
-                    fontWeight: FontWeight.bold),
+        backgroundColor: ujeBlue,
+        foregroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            shareholders.clear();
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text(
+          'Normal Vote',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Colors.white),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4),
+          child: Container(
+            height: 4,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [ujeGold, Color(0xFFFFE082)],
               ),
-              const SizedBox(
-                height: 25,
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: SizedBox(
-                  height: 800,
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: Container(
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.8,
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                  child: MaterialButton(
-                                      minWidth: 10,
-                                      color: Colors.green[800],
-                                      onPressed: () {
-                                        handleNormalVoteAll(resolutionSEQ,
-                                            proxyNumber, "1");
-                                        shareholders.clear();
-                                      },
-                                      child: vote == "1"
-                                          ? Row(
-                                              children: const [
-                                                Icon(Icons.check),
-                                                Text("For(ALL)",
-                                                    style: TextStyle(
-                                                      fontSize: 10,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ))
-                                              ],
-                                            )
-                                          : const Text("For(ALL)",
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.bold,
-                                              ))),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      10, 0, 10, 0),
-                                  child: MaterialButton(
-                                      minWidth: 10,
-                                      color: Colors.red,
-                                      onPressed: () {
-                                        handleNormalVoteAll(resolutionSEQ,
-                                            proxyNumber, "2");
-                                        shareholders.clear();
-                                      },
-                                      child: vote == "2"
-                                          ? Row(
-                                              children: const [
-                                                Icon(Icons.check),
-                                                Text("Against(ALL)",
-                                                    style: TextStyle(
-                                                      fontSize: 10,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ))
-                                              ],
-                                            )
-                                          : const Text("Against(ALL)",
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.bold,
-                                              ))),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(0.0),
-                                  child: MaterialButton(
-                                      minWidth: 10,
-                                      color: Colors.amber,
-                                      onPressed: () {
-                                        handleNormalVoteAll(resolutionSEQ,
-                                            proxyNumber, "3");
-                                        shareholders.clear();
-                                      },
-                                      child: vote == "3"
-                                          ? Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceEvenly,
-                                              children: const [
-                                                Icon(Icons.check),
-                                                Text("Abstain(ALL)",
-                                                    style: TextStyle(
-                                                      fontSize: 10,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ))
-                                              ],
-                                            )
-                                          : const Text("Abstain(ALL)",
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.bold,
-                                              ))),
-                                ),
-                                MaterialButton(
-                                    minWidth: 5,
-                                    elevation: 0.0,
-                                    color: Colors.grey[50],
-                                    onPressed: () {
-                                      debugPrint("TEST CODE" + cdsString);
-                                      context.loaderOverlay.show();
-
-                                      setState(() {
-                                        getShareholderList(
-                                          proxyNumber,
-                                          resNumber,
-                                        );
-                                        // getCandidateList(resNumber, cdsString);
-                                      });
-                                    },
-                                    child: const Text("")),
-                              ],
-                            ),
-                          ),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                              child: SizedBox(
-                                height: 250,
-                                child: Scrollbar(
-                                  child: ListView.builder(
-                                      itemCount: shareholders.length,
-                                      itemBuilder: (context, index) {
-                                        return shareholderItem(
-                                            context,
-                                            shareholders[index].shareholder!,
-                                            shareholders[index].names!,
-                                            shareholders[index].shares!,
-                                            shareholders[index].vote!,
-                                            shareholders[index].category!,
-                                            resNumber,
-                                            resolutionSEQ,
-                                            proxyNumber,
-                                            resolution);
-                                      }),
-                                ),
-                              ),
-                            ),
-                          ),
-                          MaterialButton(
-                            height: 50,
-                            minWidth: 150,
-                            onPressed: () {
-                              shareholders.clear();
-                              showToast(context, "Voted successfully");
-                              Navigator.pop(context);
-                              // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
-                            },
-                            color: Colors.green[800],
-                            child: const Text("SUBMIT",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-                      ) //LANDSCAPE VIEW
-          : Container(
-              child: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            padding: const EdgeInsets.all(32),
-                            child: Column(
-                              children: [
-              Text(
-                resolution,
-                style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 21,
-                    fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: Column(
+        children: [
+          // ── Resolution Banner ─────────────────────
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [ujeBlue, Color(0xFF0D3A7A)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              const SizedBox(
-                height: 25,
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: SizedBox(
-                  height: 800,
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: Container(
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.8,
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      child: Column(
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: ujeBlue.withOpacity(0.25),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.how_to_vote,
+                      color: Colors.white, size: 22),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(200, 0, 0, 0),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      100, 0, 0, 0),
-                                  child: MaterialButton(
-                                      color: Colors.green[800],
-                                      onPressed: () {
-                                        handleNormalVoteAll(resolutionSEQ,
-                                            proxyNumber, "1");
-                                        shareholders.clear();
-                                      },
-                                      child: vote == "1"
-                                          ? Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceEvenly,
-                                              children: const [
-                                                Icon(Icons.check),
-                                                Text("For(ALL)",
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ))
-                                              ],
-                                            )
-                                          : const Text("For(ALL)",
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold,
-                                              ))),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      80, 0, 80, 0),
-                                  child: MaterialButton(
-                                      color: Colors.red,
-                                      onPressed: () {
-                                        handleNormalVoteAll(resolutionSEQ,
-                                            proxyNumber, "2");
-                                        shareholders.clear();
-                                      },
-                                      child: vote == "2"
-                                          ? Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceEvenly,
-                                              children: const [
-                                                Icon(Icons.check),
-                                                Text("Against(ALL)",
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ))
-                                              ],
-                                            )
-                                          : const Text("Against(ALL)",
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold,
-                                              ))),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: MaterialButton(
-                                      color: Colors.amber,
-                                      onPressed: () {
-                                        handleNormalVoteAll(resolutionSEQ,
-                                            proxyNumber, "3");
-                                        shareholders.clear();
-                                      },
-                                      child: vote == "3"
-                                          ? Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceEvenly,
-                                              children: const [
-                                                Icon(Icons.check),
-                                                Text("Abstain(ALL)",
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ))
-                                              ],
-                                            )
-                                          : const Text("Abstain(ALL)",
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold,
-                                              ))),
-                                ),
-                                MaterialButton(
-                                    elevation: 0.0,
-                                    color: Colors.grey[50],
-                                    onPressed: () {
-                                      debugPrint("TEST CODE" + cdsString);
-                                      context.loaderOverlay.show();
-
-                                      setState(() {
-                                        getShareholderList(
-                                          proxyNumber,
-                                          resNumber,
-                                        );
-                                        // getCandidateList(resNumber, cdsString);
-                                      });
-                                    },
-                                    child: const Text("")),
-                              ],
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: ujeGold.withOpacity(0.25),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                  color: ujeGold.withOpacity(0.5)),
                             ),
-                          ),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: SizedBox(
-                              height: 450,
-                              child: Scrollbar(
-                                child: ListView.builder(
-                                    itemCount: shareholders.length,
-                                    itemBuilder: (context, index) {
-                                      return shareholderItem(
-                                          context,
-                                          shareholders[index].shareholder!,
-                                          shareholders[index].names!,
-                                          shareholders[index].shares!,
-                                          shareholders[index].vote!,
-                                          shareholders[index].category!,
-                                          resNumber,
-                                          resolutionSEQ,
-                                          proxyNumber,
-                                          resolution);
-                                    }),
+                            child: Text(
+                              'Res. $resNumber',
+                              style: const TextStyle(
+                                color: Color(0xFFFFE082),
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
-                          MaterialButton(
-                            height: 50,
-                            minWidth: 150,
-                            onPressed: () {
-                              shareholders.clear();
-
-                              //showToast(context, "Voted successfully");
-                              Navigator.pop(context);
-                              //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
-                            },
-                            color: Colors.green[800],
-                            child: const Text("SUBMIT",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                          )
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text(
+                              'Normal Resolution',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
+                      const SizedBox(height: 6),
+                      Text(
+                        resolution,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          height: 1.3,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Vote ALL Buttons ──────────────────────
+          Container(
+            margin: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: ujeBlue.withOpacity(0.07),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+              border: Border.all(color: ujeBlue.withOpacity(0.1)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        color: ujeBlue,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'VOTE FOR ALL SHAREHOLDERS',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: ujeBlue,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _bulkVoteButton(
+                        label: 'FOR ALL',
+                        icon: Icons.thumb_up_outlined,
+                        activeColor: Colors.green[700]!,
+                        bgColor: Colors.green.withOpacity(0.08),
+                        isActive: vote == "1",
+                        onTap: () {
+                          handleNormalVoteAll(
+                              resolutionSEQ, proxyNumber, "1");
+                          setState(() => shareholders.clear());
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _bulkVoteButton(
+                        label: 'ABSTAIN ALL',
+                        icon: Icons.remove_circle_outline,
+                        activeColor: Colors.amber[700]!,
+                        bgColor: Colors.amber.withOpacity(0.08),
+                        isActive: vote == "3",
+                        onTap: () {
+                          handleNormalVoteAll(
+                              resolutionSEQ, proxyNumber, "3");
+                          setState(() => shareholders.clear());
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _bulkVoteButton(
+                        label: 'AGAINST ALL',
+                        icon: Icons.thumb_down_outlined,
+                        activeColor: Colors.red[600]!,
+                        bgColor: Colors.red.withOpacity(0.07),
+                        isActive: vote == "2",
+                        onTap: () {
+                          handleNormalVoteAll(
+                              resolutionSEQ, proxyNumber, "2");
+                          setState(() => shareholders.clear());
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // ── Shareholders Section Label ─────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
+            child: Row(
+              children: [
+                Container(
+                  width: 4,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: ujeGold,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'SHAREHOLDERS',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: ujeGold,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: ujeBlue.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${shareholders.length} total',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: ujeBlue,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
+              ],
+            ),
+          ),
+
+          // ── Shareholders List ─────────────────────
+          Expanded(
+            child: shareholders.isEmpty
+                ? _emptyState()
+                : FadeTransition(
+              opacity: _fadeAnim,
+              child: ListView.builder(
+                padding:
+                const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                itemCount: shareholders.length,
+                itemBuilder: (context, index) {
+                  return _shareholderTile(
+                    context,
+                    index,
+                    shareholders[index].shareholder!,
+                    shareholders[index].names!,
+                    shareholders[index].shares!,
+                    shareholders[index].vote!,
+                    shareholders[index].category!,
+                    resNumber,
+                    resolutionSEQ,
+                    proxyNumber,
+                    resolution,
+                  );
+                },
               ),
-                              ],
-                            ),
-                          )),
+            ),
+          ),
+
+          // ── Submit Button ─────────────────────────
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 10,
+                  offset: const Offset(0, -4),
+                ),
+              ],
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.check_circle_outline,
+                    color: Colors.white, size: 20),
+                label: const Text(
+                  'SUBMIT VOTES',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ujeBlue,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  elevation: 3,
+                ),
+                onPressed: () {
+                  shareholders.clear();
+                  showToast(context, "Voted successfully");
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget shareholderItem(
+  // ── Empty State ───────────────────────────────────────
+
+  Widget _emptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration: const BoxDecoration(
+              color: ujeLightBlue,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.people_outline,
+                color: ujeBlue, size: 34),
+          ),
+          const SizedBox(height: 14),
+          const Text(
+            'No Shareholders',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: ujeDark,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Shareholders will appear here once loaded.',
+            style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Bulk Vote Button ──────────────────────────────────
+
+  Widget _bulkVoteButton({
+    required String label,
+    required IconData icon,
+    required Color activeColor,
+    required Color bgColor,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        height: 46,
+        decoration: BoxDecoration(
+          color: isActive ? activeColor : bgColor,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isActive
+                ? activeColor
+                : activeColor.withOpacity(0.35),
+            width: 1.2,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              isActive ? Icons.check : icon,
+              color: isActive ? Colors.white : activeColor,
+              size: 16,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+                color: isActive ? Colors.white : activeColor,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Shareholder Tile ──────────────────────────────────
+
+  Widget _shareholderTile(
       BuildContext context,
+      int index,
       String shareholder,
       String names,
       String shares,
-      String vote,
+      String existingVote,
       String category,
       String resNo,
       String resolutionSEQ,
       String proxyNumber,
-      String resolution) {
-    final currentWidth = MediaQuery.of(context).size.width;
-    return currentWidth <= 540
-        ? SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-              child: Row(
-                children: [
-                  Container(
-                    width: 800,
-                    child: Card(
-                      elevation: 5.0,
-                      child: Column(
-                        children: [
-                          Row(children: [
-                            SizedBox(
-                              width: 100,
-                              child: Text(
-                                names,
-                                style: const TextStyle(fontSize: 11.0),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                              child: Text(
-                                shares,
-                                style: const TextStyle(fontSize: 11.0),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(2.0),
-                              child: MaterialButton(
-                                  minWidth: 20,
-                                  color: Colors.green[800],
-                                  onPressed: () {
-                                    handleNormalVote(
-                                        shareholder, resNo, "1");
-                                    shareholders.clear();
-                                  },
-                                  child: vote == "1"
-                                      ? Row(
-                                          children: const [
-                                            Icon(Icons.check),
-                                            Text("For",
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  fontWeight:
-                                                      FontWeight.bold,
-                                                ))
-                                          ],
-                                        )
-                                      : const Text("For",
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.bold,
-                                          ))),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(2.0),
-                              child: MaterialButton(
-                                  minWidth: 10,
-                                  color: Colors.red,
-                                  onPressed: () {
-                                    handleNormalVote(
-                                        shareholder, resNo, "2");
-                                    shareholders.clear();
-                                  },
-                                  child: vote == "2"
-                                      ? Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: const [
-                                            Icon(Icons.check),
-                                            Text("No",
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  fontWeight:
-                                                      FontWeight.bold,
-                                                ))
-                                          ],
-                                        )
-                                      : const Text("No",
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.bold,
-                                          ))),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                              child: MaterialButton(
-                                  minWidth: 20,
-                                  color: Colors.amber,
-                                  onPressed: () {
-                                    handleNormalVote(
-                                        shareholder, resNo, "3");
-                                    shareholders.clear();
-                                  },
-                                  child: vote == "3"
-                                      ? Row(
+      String resolution,
+      ) {
+    // Determine voted state color
+    Color? votedColor;
+    String votedLabel = '';
+    if (existingVote == "1") {
+      votedColor = Colors.green[600];
+      votedLabel = 'For';
+    } else if (existingVote == "2") {
+      votedColor = Colors.red[600];
+      votedLabel = 'Against';
+    } else if (existingVote == "3") {
+      votedColor = Colors.amber[700];
+      votedLabel = 'Abstain';
+    }
 
-                                          children: const [
-                                            Icon(Icons.check),
-                                            Text("Abstain",
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  fontWeight:
-                                                      FontWeight.bold,
-                                                ))
-                                          ],
-                                        )
-                                      : const Text("Abstain",
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.bold,
-                                          ))),
-                            ),
-                          ]),
-                        ],
+    final bool hasVoted = existingVote == "1" ||
+        existingVote == "2" ||
+        existingVote == "3";
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: hasVoted
+            ? votedColor!.withOpacity(0.06)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: hasVoted
+              ? votedColor!.withOpacity(0.3)
+              : ujeBlue.withOpacity(0.1),
+          width: hasVoted ? 1.5 : 1.0,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: ujeBlue.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: 12, vertical: 10),
+        child: Column(
+          children: [
+            // Top row: index + name + shares + voted badge
+            Row(
+              children: [
+                // Index circle
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: hasVoted
+                        ? votedColor!.withOpacity(0.15)
+                        : ujeLightBlue,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                        color:
+                        hasVoted ? votedColor : ujeBlue,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ) //Landscape view
-        : Container(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(150, 20, 0, 0),
-                  child: Row(
+                  ),
+                ),
+                const SizedBox(width: 10),
+                // Name & shares
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 1000,
-                        child: Card(
-                          elevation: 5.0,
-                          child: Column(
-                            children: [
-                              Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SizedBox(
-                                      width: 400,
-                                      child: Text(
-                                        names,
-                                        style: const TextStyle(fontSize: 17.0),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 150,
-                                      child: Text(
-                                        shares,
-                                        style: const TextStyle(fontSize: 17.0),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(2.0),
-                                      child: MaterialButton(
-                                          color: Colors.green[800],
-                                          onPressed: () {
-                                            handleNormalVote(
-                                                shareholder, resNo, "1");
-                                            shareholders.clear();
-                                          },
-                                          child: vote == "1"
-                                              ? Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: const [
-                                                    Icon(Icons.check),
-                                                    Text("Yes",
-                                                        style: TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ))
-                                                  ],
-                                                )
-                                              : const Text("Yes",
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                  ))),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(2.0),
-                                      child: MaterialButton(
-                                          color: Colors.red,
-                                          onPressed: () {
-                                            handleNormalVote(
-                                                shareholder, resNo, "2");
-                                            shareholders.clear();
-                                          },
-                                          child: vote == "2"
-                                              ? Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: const [
-                                                    Icon(Icons.check),
-                                                    Text("Against",
-                                                        style: TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ))
-                                                  ],
-                                                )
-                                              : const Text("Against",
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                  ))),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(2.0),
-                                      child: MaterialButton(
-                                          color: Colors.amber,
-                                          onPressed: () {
-                                            handleNormalVote(
-                                                shareholder, resNo, "3");
-                                            shareholders.clear();
-                                          },
-                                          child: vote == "3"
-                                              ? Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: const [
-                                                    Icon(Icons.check),
-                                                    Text("Abstain",
-                                                        style: TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ))
-                                                  ],
-                                                )
-                                              : const Text("Abstain",
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                  ))),
-                                    ),
-                                  ]),
-                            ],
-                          ),
+                      Text(
+                        names,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: ujeDark,
                         ),
-                      )
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Icon(Icons.bar_chart,
+                              size: 11,
+                              color: Colors.grey[500]),
+                          const SizedBox(width: 3),
+                          Text(
+                            '$shares shares',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
+                // Voted badge
+                if (hasVoted)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: votedColor!.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                          color: votedColor.withOpacity(0.4)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.check_circle,
+                            color: votedColor, size: 12),
+                        const SizedBox(width: 4),
+                        Text(
+                          votedLabel,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: votedColor,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            // Vote buttons row
+            Row(
+              children: [
+                Expanded(
+                  child: _voteButton(
+                    label: 'FOR',
+                    icon: Icons.thumb_up_outlined,
+                    activeColor: Colors.green[700]!,
+                    bgColor: Colors.green.withOpacity(0.07),
+                    isActive: existingVote == "1",
+                    onTap: () {
+                      context.loaderOverlay.show();
+                      handleNormalVote(shareholder, resNo, "1");
+                      setState(() => shareholders.clear());
+                    },
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: _voteButton(
+                    label: 'ABSTAIN',
+                    icon: Icons.remove_circle_outline,
+                    activeColor: Colors.amber[700]!,
+                    bgColor: Colors.amber.withOpacity(0.07),
+                    isActive: existingVote == "3",
+                    onTap: () {
+                      context.loaderOverlay.show();
+                      handleNormalVote(shareholder, resNo, "3");
+                      setState(() => shareholders.clear());
+                    },
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: _voteButton(
+                    label: 'AGAINST',
+                    icon: Icons.thumb_down_outlined,
+                    activeColor: Colors.red[600]!,
+                    bgColor: Colors.red.withOpacity(0.07),
+                    isActive: existingVote == "2",
+                    onTap: () {
+                      context.loaderOverlay.show();
+                      handleNormalVote(shareholder, resNo, "2");
+                      setState(() => shareholders.clear());
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Individual Vote Button ────────────────────────────
+
+  Widget _voteButton({
+    required String label,
+    required IconData icon,
+    required Color activeColor,
+    required Color bgColor,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        height: 40,
+        decoration: BoxDecoration(
+          color: isActive ? activeColor : bgColor,
+          borderRadius: BorderRadius.circular(9),
+          border: Border.all(
+            color:
+            isActive ? activeColor : activeColor.withOpacity(0.3),
+            width: 1.2,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              isActive ? Icons.check : icon,
+              color: isActive ? Colors.white : activeColor,
+              size: 14,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: isActive ? Colors.white : activeColor,
+                letterSpacing: 0.3,
               ),
-            ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

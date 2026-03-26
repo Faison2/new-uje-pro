@@ -3,62 +3,56 @@ import 'package:uje/shareholder_election_vote_all.dart';
 import 'package:uje/constants/constants.dart';
 import 'package:uje/model/VoterModel.dart';
 import 'package:uje/model/candidate_model.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-
-import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-
 import 'constants/ui_constants.dart';
 
 class ShareholderVotePage extends StatefulWidget {
-  // final String responseMessage;
-  const ShareholderVotePage({
-    Key? key,
-    // required this.responseMessage,
-  }) : super(key: key);
+  const ShareholderVotePage({Key? key}) : super(key: key);
 
   @override
-  State<ShareholderVotePage> createState() => _ShareholderVotePageState();
+  State<ShareholderVotePage> createState() =>
+      _ShareholderVotePageState();
 }
 
-class _ShareholderVotePageState extends State<ShareholderVotePage> {
+class _ShareholderVotePageState extends State<ShareholderVotePage>
+    with SingleTickerProviderStateMixin {
+  // ── UJE Brand Colors ──────────────────────────────────
+  static const Color ujeBlue = Color(0xFF1A5CB8);
+  static const Color ujeGold = Color(0xFFC9A227);
+  static const Color ujeLightBlue = Color(0xFFE8F0FB);
+  static const Color ujeBackground = Color(0xFFF4F6FB);
+  static const Color ujeDark = Color(0xFF1A2340);
+
   TextEditingController voterController = TextEditingController();
   String respRef = "";
   String responseMessage = "";
-
-  //This is Handling data from the backend passing it to the frontend
-  //
-
   String agmId = "";
   String company = "";
   String meetingInfo = "";
   String cdsString = "";
   String responseVoteMessage = "";
-  String name = " ";
+  String name = "";
   String cdsNo = "";
   String shares = "";
-  String regStatus = " ";
+  String regStatus = "";
   String resolution1 = "";
   List resolutions = [];
-  List nominees = [];
   bool isVisible = false;
-  String nomineeName = "";
-  List orderNumbers = [];
-  List resolutionNumbers = [];
   String voteCode = "";
   VoterModel voterModel = VoterModel();
   int onSelected = 0;
-
   String voteType = "";
   List<CandidateModel> candidates = [];
   String resolutionText = "";
   String resolutionNo = "";
   String cardState = "";
-
   String voteStatus = "";
+
+  late AnimationController _animController;
+  late Animation<double> _fadeAnim;
 
   @override
   void initState() {
@@ -66,12 +60,53 @@ class _ShareholderVotePageState extends State<ShareholderVotePage> {
     voterController.addListener(() {
       cdsNo = voterController.text;
     });
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _fadeAnim =
+        CurvedAnimation(parent: _animController, curve: Curves.easeOut);
   }
 
+  @override
+  void dispose() {
+    _animController.dispose();
+    voterController.dispose();
+    super.dispose();
+  }
+
+  // ── Helpers ───────────────────────────────────────────
+
+  void _showUjeToast(String msg) {
+    Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: ujeBlue,
+      textColor: Colors.white,
+      fontSize: 14.0,
+      timeInSecForIosWeb: 3,
+    );
+  }
+
+  void _clearAll() {
+    setState(() {
+      isVisible = false;
+      resolutions.clear();
+      voterController.text = "";
+      cdsString = "";
+      meetingInfo = "";
+      name = "";
+      shares = "";
+      regStatus = "";
+      company = "";
+    });
+  }
+
+  // ── API Methods ───────────────────────────────────────
+
   getResolutions(String cdsNo) async {
-    String urlAllDetails =
-        '$baseApiUrl/getVoteDetails';
-    debugPrint("CDS No. is: $cdsNo");
+    String urlAllDetails = '$baseApiUrl/getVoteDetails';
     cardState = cdsNo;
 
     final response = await http.post(
@@ -82,307 +117,829 @@ class _ShareholderVotePageState extends State<ShareholderVotePage> {
     if (response.statusCode == 200 || response.statusCode == 400) {
       final responseJson = json.decode(response.body);
       if (responseJson[0]["responseCode"] == 4) {
-        Fluttertoast.showToast(
-            msg: "${responseJson[0]["responseMessage"]}",
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            textColor: Colors.white,
-            fontSize: 18.0);
+        _showUjeToast(responseJson[0]["responseMessage"]);
         context.loaderOverlay.hide();
-        debugPrint(responseJson[0]["responseMessage"]);
         return responseJson[0]["responseMessage"].toString();
       } else if (responseJson[0]["responseCode"] == 2) {
-        debugPrint(responseJson[0]["responseMessage"]);
-        showToast(context, responseJson[0]["responseMessage"]);
+        _showUjeToast(responseJson[0]["responseMessage"]);
         context.loaderOverlay.hide();
         return responseJson[0]["responseMessage"].toString();
       } else if (responseJson[0]["responseCode"] == 6 ||
           responseJson[0]["resItem"].length == null) {
-        // ignore: avoid_print
         voterModel = VoterModel.fromJson(responseJson[0]);
-
         for (int? i = 0; i! < responseJson[0]["resItem"].length; i++) {
-          debugPrint(responseJson[0]["resItem"][i].toString());
           resolutions.add(responseJson[0]["resItem"][i]);
-          // voterModel.resItem?.add(responseJson[0]["resItem"][i]);
         }
-
         setState(() {
           cdsString = "${voterModel.cDSNo}";
-          meetingInfo = "Meeting Information: ${voterModel.meetingInfo}";
+          meetingInfo =
+          "Meeting Information: ${voterModel.meetingInfo}";
           name = "${voterModel.names}";
           shares = "${voterModel.shares}";
           regStatus = "${voterModel.regStatus}";
           company = "${voterModel.company}";
-
           isVisible = true;
         });
+        _animController.forward(from: 0);
         context.loaderOverlay.hide();
       }
     } else {
-      Fluttertoast.showToast(
-          msg: "Failed To Retrieve Data",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green[800],
-          textColor: Colors.white,
-          fontSize: 18.0);
+      _showUjeToast("Failed to retrieve data");
       context.loaderOverlay.hide();
     }
     context.loaderOverlay.hide();
   }
 
-  handleNormalResVote(String cdsNo, String resNumber, String vote) async {
-    String urlVoteNormalRes =
-        "$baseApiUrl/CommitVoteNormalRes";
-    debugPrint("Vote Code is $cdsNo");
-    final response = await http.post(Uri.parse(urlVoteNormalRes),
-        body: {"CDSNo": cdsNo, "ResolutionNumber": resNumber, "Vote": vote});
-
+  handleNormalResVote(
+      String cdsNo, String resNumber, String vote) async {
+    String urlVoteNormalRes = "$baseApiUrl/CommitVoteNormalRes";
+    final response = await http.post(
+      Uri.parse(urlVoteNormalRes),
+      body: {
+        "CDSNo": cdsNo,
+        "ResolutionNumber": resNumber,
+        "Vote": vote
+      },
+    );
     final responseJson = json.decode(response.body);
     if (response.statusCode == 200 || response.statusCode == 400) {
-      // ignore: avoid_print
-      voteStatus = responseJson[0]["responseMesssage"].toString();
-
-      Fluttertoast.showToast(
-          msg: "${responseJson[0]["responseMessage"]}",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green[800],
-          textColor: Colors.white,
-          fontSize: 18.0);
-      context.loaderOverlay.hide();
+      _showUjeToast(responseJson[0]["responseMessage"]);
       setState(() {
         voteStatus = responseJson[0]["responseMessage"].toString();
       });
     } else {
-      Fluttertoast.showToast(
-          msg: "${responseJson[0]["responseMessage"]}",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green[800],
-          textColor: Colors.white,
-          fontSize: 18.0);
-      context.loaderOverlay.hide();
+      _showUjeToast(responseJson[0]["responseMessage"]);
     }
+    context.loaderOverlay.hide();
     getResolutions(cdsNo);
   }
 
   getCandidateList(String resoNumber, String cdsNo) async {
-    String candidateListUrl =
-        "$baseApiUrl/getCandidateList";
-    debugPrint("TESTING PURPOSES: $resoNumber");
+    String candidateListUrl = "$baseApiUrl/getCandidateList";
     final response = await http.post(
       Uri.parse(candidateListUrl),
       body: {"resNo": resoNumber, "CDSNo": cdsNo},
     );
-
     if (response.statusCode == 200 || response.statusCode == 400) {
       final responseJson = json.decode(response.body);
-
       for (int i = 0; i < responseJson.length; i++) {
-        CandidateModel candidateModel =
-            CandidateModel.fromJson(responseJson[i]);
-        candidates.add(candidateModel);
+        candidates.add(CandidateModel.fromJson(responseJson[i]));
       }
-      resoNumber = responseJson[0]["resNo"].toString();
-
       setState(() {
         resoNumber = responseJson[0]["resNo"].toString();
-        debugPrint("$responseJson");
       });
-    } else {
-      debugPrint('Error failed to retrieve candidates');
     }
     context.loaderOverlay.hide();
   }
 
   postCandidateVote(
       String cdsNo, orderNumber, resolutionNumber, voteType) async {
-    String voteUrl =
-        "$baseApiUrl/CommitVoteElectionRes";
-
-    final body = {
-      "CDSNo": cdsNo,
-      "ResolutionNumber": resolutionNumber,
-      "Vote": orderNumber,
-      "VoteType": voteType,
-      "isShareholderorProxy": "Shareholder"
-    };
-    debugPrint(body.toString());
-
+    String voteUrl = "$baseApiUrl/CommitVoteElectionRes";
     final response = await http.post(
       Uri.parse(voteUrl),
-      body: body,
+      body: {
+        "CDSNo": cdsNo,
+        "ResolutionNumber": resolutionNumber,
+        "Vote": orderNumber,
+        "VoteType": voteType,
+        "isShareholderorProxy": "Shareholder"
+      },
     );
     final responseJson = json.decode(response.body);
     if (response.statusCode == 200 || response.statusCode == 400) {
       if (responseJson[0]["responseCode"] == 0) {
-        debugPrint('SUCCESSFUL!!! \n $responseJson');
-        Fluttertoast.showToast(
-            msg: "${responseJson[0]["responseMessage"]}",
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.green[800],
-            textColor: Colors.white,
-            fontSize: 18.0);
-        context.loaderOverlay.hide();
-
+        _showUjeToast(responseJson[0]["responseMessage"]);
         setState(() {
-          responseVoteMessage = responseJson[0]["responseMessage"].toString();
+          responseVoteMessage =
+              responseJson[0]["responseMessage"].toString();
         });
-
-        context.loaderOverlay.hide();
       }
     } else {
-      debugPrint('Error failed');
-      Fluttertoast.showToast(
-          msg: "Vote Failed:  ${responseJson[0]["responseMessage"]}",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green[800],
-          textColor: Colors.white,
-          fontSize: 18.0);
-
-      context.loaderOverlay.hide();
+      _showUjeToast(
+          "Vote Failed: ${responseJson[0]["responseMessage"]}");
     }
     context.loaderOverlay.hide();
   }
 
+  // ── Build ─────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      cdsNo = cdsString;
-    });
+    cdsNo = cdsString;
     return Scaffold(
+      backgroundColor: ujeBackground,
       appBar: AppBar(
-        title: const Text("Shareholder Details"),
+        backgroundColor: ujeBlue,
+        foregroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0,
+        title: const Text(
+          'Shareholder Voting',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Colors.white),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4),
+          child: Container(
+            height: 4,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [ujeGold, Color(0xFFFFE082)],
+              ),
+            ),
+          ),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(
-            height: 25,
-          ),
-          // Text("You have successfully Registered! $responseMessage"),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Search Card ───────────────────────────
+            _buildSearchCard(),
 
-          TextField(
-            controller: voterController,
-            onChanged: (text) {
-              if (text == cdsNo) {}
-            },
-            decoration: InputDecoration(
-              labelText: "Enter CDS No.",
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
-            ),
-          ),
-          SizedBox(height: 10,),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              MaterialButton(
-                  height: 50,
-                  minWidth: 120,
-                  color: Colors.green[800],
-                  onPressed: () {
-                    context.loaderOverlay.show();
-                    getResolutions(cdsNo);
-                    // setState(() {});
-                  },
-                  child: const Text("Search",
-                      style: TextStyle(
-                        fontSize: 23,
-                        fontWeight: FontWeight.bold,
-                      ))),
-              MaterialButton(
-                  color: Colors.red,
-                  height: 50,
-                  minWidth: 120,
-                  onPressed: () {
-                    setState(() {
-                      isVisible = false;
-                      resolutions.clear();
-                      voterController.text = "";
-
-                      cdsString = "";
-                      meetingInfo = "";
-                      name = "";
-                      shares = "";
-                      regStatus = "";
-                      company = "";
-                    });
-                  },
-                  child: const Text(" Clear",
-                      style: TextStyle(
-                        fontSize: 23,
-                        fontWeight: FontWeight.bold,
-                      ))),
+            // ── Shareholder Info Banner ───────────────
+            if (isVisible && name.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _buildShareholderBanner(),
             ],
-          ),
-          SizedBox(height: 20,),
-          //STARTING HERE
-          SizedBox(
-            // height: 100,
-            width: screenWidth(context) ,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                shareHolderDetails("Name:", name),
-                shareHolderDetails("CDS No:", cdsString),
-                shareHolderDetails("Company", company),
-                shareHolderDetails("Shares", shares),
-                shareHolderDetails("Status", regStatus),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
 
-          isVisible
-              ? SizedBox(
-                height: MediaQuery.of(context).size.height * 0.5,
-                width: MediaQuery.of(context).size.width,
+            // ── Resolutions Section ───────────────────
+            if (isVisible) ...[
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Container(
+                    width: 4,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: ujeGold,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'RESOLUTIONS',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: ujeGold,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: ujeGold.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${voterModel.resItem?.length ?? 0} items',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: ujeGold,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              FadeTransition(
+                opacity: _fadeAnim,
                 child: ListView.builder(
-                    itemCount: voterModel.resItem!.length,
-                    itemBuilder: (context, index) {
-                      return voteTile(
-                          context,
-                          voterModel.resItem![index].resText!,
-                          voterModel.resItem![index].resType!,
-                          voterModel.resItem![index].resNo!,
-                          voterModel.resItem![index].resExistingVote!,
-                          voteType);
-                    }),
-              )
-              : const SizedBox(),
-        ],
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: voterModel.resItem?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    return _resolutionTile(
+                      context,
+                      index,
+                      voterModel.resItem![index].resText!,
+                      voterModel.resItem![index].resType!,
+                      voterModel.resItem![index].resNo!,
+                      voterModel.resItem![index].resExistingVote!,
+                      voteType,
+                    );
+                  },
                 ),
               ),
+            ],
+          ],
+        ),
       ),
     );
   }
 
-  Future<void> _showCandidateListDialog(BuildContext context, String cdsString,
-      String resolution, String voteType) async {
+  // ── Search Card ───────────────────────────────────────
+
+  Widget _buildSearchCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: ujeBlue.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Container(
+            padding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: ujeBlue.withOpacity(0.06),
+              borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16)),
+              border: Border(
+                  bottom: BorderSide(
+                      color: ujeBlue.withOpacity(0.1), width: 1)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 4,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: ujeBlue,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'SHAREHOLDER LOOKUP',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: ujeBlue,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                // CDS Input
+                TextFormField(
+                  controller: voterController,
+                  style:
+                  const TextStyle(fontSize: 14, color: ujeDark),
+                  decoration: InputDecoration(
+                    labelText: 'CDS Number',
+                    hintText: 'Enter your CDS No.',
+                    labelStyle: TextStyle(
+                        color: ujeBlue.withOpacity(0.7),
+                        fontSize: 13),
+                    prefixIcon: const Icon(Icons.badge_outlined,
+                        color: ujeBlue, size: 20),
+                    filled: true,
+                    fillColor: const Color(0xFFF8FAFF),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                          color: ujeBlue.withOpacity(0.2)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                          color: ujeBlue.withOpacity(0.25)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
+                          color: ujeBlue, width: 1.5),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                // Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 46,
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.search,
+                              color: Colors.white, size: 18),
+                          label: const Text('Search',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: ujeBlue,
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                BorderRadius.circular(10)),
+                            elevation: 2,
+                          ),
+                          onPressed: () {
+                            context.loaderOverlay.show();
+                            getResolutions(cdsNo);
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: SizedBox(
+                        height: 46,
+                        child: OutlinedButton.icon(
+                          icon: const Icon(
+                              Icons.clear_all_rounded,
+                              color: Colors.redAccent,
+                              size: 18),
+                          label: const Text('Clear',
+                              style: TextStyle(
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15)),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(
+                                color: Colors.redAccent,
+                                width: 1.2),
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                BorderRadius.circular(10)),
+                          ),
+                          onPressed: _clearAll,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Shareholder Banner ────────────────────────────────
+
+  Widget _buildShareholderBanner() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [ujeBlue, Color(0xFF0D3A7A)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: ujeBlue.withOpacity(0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Top row: avatar + name + status badge
+          Row(
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.person_outline,
+                    color: Colors.white, size: 24),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'SHAREHOLDER',
+                      style: TextStyle(
+                        color: Colors.white60,
+                        fontSize: 10,
+                        letterSpacing: 1.0,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: regStatus.toLowerCase().contains('reg')
+                      ? Colors.green.withOpacity(0.25)
+                      : Colors.orange.withOpacity(0.25),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: regStatus.toLowerCase().contains('reg')
+                        ? Colors.green.withOpacity(0.6)
+                        : Colors.orange.withOpacity(0.6),
+                  ),
+                ),
+                child: Text(
+                  regStatus.isEmpty ? 'Active' : regStatus,
+                  style: TextStyle(
+                    color:
+                    regStatus.toLowerCase().contains('reg')
+                        ? Colors.greenAccent[100]
+                        : Colors.orange[100],
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          // Divider
+          Container(
+              height: 1,
+              color: Colors.white.withOpacity(0.15)),
+          const SizedBox(height: 14),
+          // Info grid
+          Row(
+            children: [
+              Expanded(
+                  child: _infoChip(
+                      Icons.numbers, 'CDS No.', cdsString)),
+              const SizedBox(width: 10),
+              Expanded(
+                  child: _infoChip(
+                      Icons.business, 'Company', company)),
+              const SizedBox(width: 10),
+              Expanded(
+                  child: _infoChip(
+                      Icons.bar_chart, 'Shares', shares)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoChip(IconData icon, String label, String value) {
+    return Container(
+      padding:
+      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: Colors.white60, size: 11),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: const TextStyle(
+                    color: Colors.white60,
+                    fontSize: 10,
+                    letterSpacing: 0.5),
+              ),
+            ],
+          ),
+          const SizedBox(height: 3),
+          Text(
+            value.isEmpty ? '—' : value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Resolution Tile ───────────────────────────────────
+
+  Widget _resolutionTile(
+      BuildContext context,
+      int index,
+      String voteDetails,
+      String type,
+      String resNumber,
+      String resExistingVote,
+      voteType,
+      ) {
+    final bool isNormal = type == "Normal Resolution";
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: ujeBlue.withOpacity(0.07),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: ujeBlue.withOpacity(0.1)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header chips row
+            Row(
+              children: [
+                // Index badge
+                Container(
+                  width: 30,
+                  height: 30,
+                  decoration: const BoxDecoration(
+                    color: ujeBlue,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${index + 1}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _chip('Res. $resNumber', ujeBlue, ujeLightBlue),
+                const SizedBox(width: 6),
+                _chip(
+                  isNormal ? 'Normal' : 'Election',
+                  isNormal
+                      ? Colors.green[700]!
+                      : ujeGold,
+                  isNormal
+                      ? Colors.green.withOpacity(0.1)
+                      : ujeGold.withOpacity(0.12),
+                ),
+                if (resExistingVote.isNotEmpty &&
+                    resExistingVote != "0") ...[
+                  const Spacer(),
+                  const Icon(Icons.check_circle,
+                      color: Colors.green, size: 18),
+                  const SizedBox(width: 4),
+                  const Text(
+                    'Voted',
+                    style: TextStyle(
+                        color: Colors.green,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 10),
+            // Resolution text
+            Text(
+              voteDetails,
+              style: const TextStyle(
+                fontSize: 14,
+                color: ujeDark,
+                height: 1.4,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 14),
+            // Vote actions
+            isNormal
+                ? _normalVoteButtons(resNumber, resExistingVote)
+                : _electionVoteButton(resNumber, voteDetails),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _chip(String label, Color textColor, Color bgColor) {
+    return Container(
+      padding:
+      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: textColor,
+        ),
+      ),
+    );
+  }
+
+  // ── Normal Resolution Vote Buttons ────────────────────
+
+  Widget _normalVoteButtons(
+      String resNumber, String resExistingVote) {
+    return Row(
+      children: [
+        Expanded(
+          child: _voteButton(
+            label: 'FOR',
+            icon: Icons.thumb_up_outlined,
+            activeColor: Colors.green[700]!,
+            inactiveColor: Colors.green.withOpacity(0.08),
+            isActive: resExistingVote == "1",
+            onTap: () {
+              context.loaderOverlay.show();
+              handleNormalResVote(cdsString, resNumber, "1");
+              Future.delayed(const Duration(milliseconds: 500),
+                      () => setState(() => onSelected = 1));
+            },
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _voteButton(
+            label: 'ABSTAIN',
+            icon: Icons.remove_circle_outline,
+            activeColor: Colors.amber[700]!,
+            inactiveColor: Colors.amber.withOpacity(0.08),
+            isActive: resExistingVote == "3",
+            onTap: () {
+              context.loaderOverlay.show();
+              handleNormalResVote(cdsString, resNumber, "3");
+              Future.delayed(const Duration(milliseconds: 500),
+                      () => setState(() => onSelected = 3));
+            },
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _voteButton(
+            label: 'AGAINST',
+            icon: Icons.thumb_down_outlined,
+            activeColor: Colors.red[600]!,
+            inactiveColor: Colors.red.withOpacity(0.07),
+            isActive: resExistingVote == "2",
+            onTap: () {
+              context.loaderOverlay.show();
+              handleNormalResVote(cdsString, resNumber, "2");
+              Future.delayed(const Duration(milliseconds: 500),
+                      () => setState(() => onSelected = 2));
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _voteButton({
+    required String label,
+    required IconData icon,
+    required Color activeColor,
+    required Color inactiveColor,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        height: 46,
+        decoration: BoxDecoration(
+          color: isActive ? activeColor : inactiveColor,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isActive
+                ? activeColor
+                : activeColor.withOpacity(0.3),
+            width: 1.2,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (isActive)
+              Icon(Icons.check, color: Colors.white, size: 14),
+            if (!isActive)
+              Icon(icon,
+                  color: activeColor.withOpacity(0.8), size: 14),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: isActive ? Colors.white : activeColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Election Vote Button ──────────────────────────────
+
+  Widget _electionVoteButton(
+      String resNumber, String voteDetails) {
+    return SizedBox(
+      width: double.infinity,
+      height: 44,
+      child: ElevatedButton.icon(
+        icon: const Icon(Icons.how_to_vote_outlined,
+            color: Colors.white, size: 16),
+        label: const Text(
+          'ELECT CANDIDATE',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+            letterSpacing: 0.8,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ujeGold,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10)),
+          elevation: 2,
+        ),
+        onPressed: () {
+          getCandidateList(resNumber, cdsString);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ShareholderElectionVoteScreen(
+                resNumber: resNumber,
+                cdsString: cdsNo,
+                voteDetails: voteDetails,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // ── Candidate Dialog ──────────────────────────────────
+
+  Future<void> _showCandidateListDialog(BuildContext context,
+      String cdsString, String resolution, String voteType) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(resolution),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            resolution,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: ujeBlue,
+                fontSize: 15),
+          ),
           content: SizedBox(
-            height: 600,
-            width: 700,
+            height: 500,
+            width: double.maxFinite,
             child: ListView.builder(
               itemCount: candidates.length,
               itemBuilder: (context, index) {
-                return candidateItem(
+                return _candidateItem(
                   context,
                   candidates[index].nomineeName!,
                   cdsString,
@@ -393,14 +950,20 @@ class _ShareholderVotePageState extends State<ShareholderVotePage> {
               },
             ),
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
+          actions: [
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(
+                    color: ujeBlue.withOpacity(0.4)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
               onPressed: () {
                 candidates.clear();
-                // Navigator.of(context).pop();
                 Navigator.pop(context, true);
               },
+              child: const Text('Close',
+                  style: TextStyle(color: ujeBlue)),
             ),
           ],
         );
@@ -408,258 +971,117 @@ class _ShareholderVotePageState extends State<ShareholderVotePage> {
     );
   }
 
-  Widget candidateItem(
-    BuildContext context,
-    String nomineeName,
-    String cdsString,
-    String orderNumber,
-    String resolutionNumber,
-    String resExistingVote,
-  ) {
-    return Card(
-      elevation: 5.0,
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          SizedBox(
-            width: 400,
-            child: Text(
-              nomineeName,
-              style: const TextStyle(fontSize: 10.0),
+  Widget _candidateItem(
+      BuildContext context,
+      String nomineeName,
+      String cdsString,
+      String orderNumber,
+      String resolutionNumber,
+      String resExistingVote,
+      ) {
+    final bool hasVoted = resExistingVote == "1";
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding:
+      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: hasVoted ? ujeLightBlue : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: hasVoted
+              ? ujeBlue.withOpacity(0.3)
+              : Colors.grey.withOpacity(0.15),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color:
+              hasVoted ? ujeBlue : Colors.grey.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              hasVoted ? Icons.how_to_vote : Icons.person_outline,
+              color: hasVoted ? Colors.white : Colors.grey,
+              size: 18,
             ),
           ),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: MaterialButton(
-                    onPressed: () {
-                      context.loaderOverlay.show();
-                      postCandidateVote(
-                          cdsString, orderNumber, resolutionNumber, "1");
-
-                      _showCandidateListDialog(
-                          context, cdsString, resolutionNumber, voteType);
-                    },
-                    color: Colors.green[800],
-                    child: resExistingVote == "1"
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: const [
-                              Icon(Icons.check),
-                              Text("Yes",
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ))
-                            ],
-                          )
-                        : const Text("Yes",
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ))),
-              ), Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: MaterialButton(
-                    onPressed: () {
-                      context.loaderOverlay.show();
-                      postCandidateVote(
-                          cdsString, orderNumber, resolutionNumber, "3");
-                    },
-                    color: Colors.amber[100],
-                    child: const Text("Recast")),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              nomineeName,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: hasVoted ? ujeBlue : ujeDark,
               ),
-            ],
+            ),
           ),
-        ]),
-      ),
-    );
-  }
-
-  Widget shareHolderDetails(String detailTitle, String detail) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-          flex: 1,
-          child: const SizedBox(
-          ),
-        ),
-        Expanded(
-          flex: 2,
-          child: Text(
-            detailTitle,
-            textAlign: TextAlign.left,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-        Expanded(
-          flex: 2,
-          child: Text(
-            detail,
-            textAlign: TextAlign.left,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget voteTile(BuildContext context, String voteDetails, String type,
-      String resNumber, String resExistingVote, voteType) {
-    return SingleChildScrollView(
-      child: type == "Normal Resolution"
-          ? Card(
-        child: SizedBox(
-            width: 100,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  SizedBox(
-                    width: 10,
-                    child: Text(
-                      resNumber,
-                      style: const TextStyle(fontSize: 10.0),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 90,
-                    child: Text(
-                      voteDetails,
-                      style: const TextStyle(fontSize: 10.0),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: MaterialButton(
-                      height: 25,
-                      minWidth: 30,
-                      color: Colors.green[800],
-                      onPressed: () {
-                        handleNormalResVote(cdsString, resNumber, "1");
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          setState(() {
-                            onSelected = 1;
-                          });
-                        });
-                      },
-                      child: resExistingVote == "1"
-                          ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: const [
-                          Icon(Icons.check),
-                          Text("For", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold))
-                        ],
-                      )
-                          : const Text("For", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: MaterialButton(
-                      height: 25,
-                      minWidth: 30,
-                      color: Colors.amber,
-                      onPressed: () {
-                        handleNormalResVote(cdsString, resNumber, "3");
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          setState(() {
-                            onSelected = 3;
-                          });
-                        });
-                      },
-                      child: resExistingVote == "3"
-                          ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: const [
-                          Icon(Icons.check),
-                          Text("Abstain", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold))
-                        ],
-                      )
-                          : const Text("Abstain", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: MaterialButton(
-                      height: 25,
-                      minWidth: 20,
-                      color: Colors.red,
-                      onPressed: () {
-                        handleNormalResVote(cdsString, resNumber, "2");
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          setState(() {
-                            onSelected = 2;
-                          });
-                        });
-                      },
-                      child: resExistingVote == "2"
-                          ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: const [
-                          Icon(Icons.check),
-                          Text("Against", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold))
-                        ],
-                      )
-                          : const Text("Against", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                ],
+          const SizedBox(width: 8),
+          // Vote button
+          SizedBox(
+            height: 34,
+            child: ElevatedButton.icon(
+              icon: Icon(
+                  hasVoted ? Icons.check : Icons.how_to_vote_outlined,
+                  size: 14,
+                  color: Colors.white),
+              label: Text(
+                hasVoted ? 'Voted' : 'Vote',
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold),
               ),
-            )),
-      )
-          : Card(
-        child: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.7,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  SizedBox(
-                    width: 10,
-                    child: Text(
-                      resNumber,
-                      style: const TextStyle(fontSize: 10.0),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      voteDetails,
-                      style: const TextStyle(fontSize: 10.0),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10.0,
-                  ),
-                  MaterialButton(
-                    height: 50,
-                    minWidth: 90,
-                    color: Colors.green[800],
-                    onPressed: () {
-                      getCandidateList(resNumber, cdsString);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ShareholderElectionVoteScreen(
-                            resNumber: resNumber,
-                            cdsString: cdsNo,
-                            voteDetails: voteDetails,
-                          ),
-                        ),
-                      );
-                    },
-                    child: const Text("Elect", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              )),
-        ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                hasVoted ? Colors.green[600] : ujeBlue,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                elevation: hasVoted ? 0 : 2,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+              ),
+              onPressed: () {
+                context.loaderOverlay.show();
+                postCandidateVote(
+                    cdsString, orderNumber, resolutionNumber, "1");
+                _showCandidateListDialog(
+                    context, cdsString, resolutionNumber, voteType);
+              },
+            ),
+          ),
+          const SizedBox(width: 6),
+          // Recast button
+          SizedBox(
+            height: 34,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(
+                    color: Colors.amber[600]!, width: 1.2),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 10),
+              ),
+              onPressed: () {
+                context.loaderOverlay.show();
+                postCandidateVote(
+                    cdsString, orderNumber, resolutionNumber, "3");
+              },
+              child: Text(
+                'Recast',
+                style: TextStyle(
+                    color: Colors.amber[700],
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

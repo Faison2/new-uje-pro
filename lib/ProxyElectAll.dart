@@ -7,8 +7,6 @@ import 'package:http/http.dart' as http;
 import 'package:uje/services.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-
-import 'home_screen.dart';
 import 'constants/ui_constants.dart';
 
 class ProxyElectionAllVotePage extends StatefulWidget {
@@ -25,8 +23,6 @@ class ProxyElectionAllVotePage extends StatefulWidget {
     required this.voteDetails,
     required this.resolutionSEQ,
     required this.proxyNumber,
-
-    // required this.responseMessage,
   }) : super(key: key);
 
   @override
@@ -34,72 +30,75 @@ class ProxyElectionAllVotePage extends StatefulWidget {
       _ProxyElectionAllVotePageState();
 }
 
-class _ProxyElectionAllVotePageState extends State<ProxyElectionAllVotePage> {
-  TextEditingController voterController = TextEditingController();
-  String respRef = "";
-  String responseMessage = "";
+class _ProxyElectionAllVotePageState
+    extends State<ProxyElectionAllVotePage>
+    with SingleTickerProviderStateMixin {
+  // ── UJE Brand Colors ──────────────────────────────────
+  static const Color ujeBlue = Color(0xFF1A5CB8);
+  static const Color ujeGold = Color(0xFFC9A227);
+  static const Color ujeLightBlue = Color(0xFFE8F0FB);
+  static const Color ujeBackground = Color(0xFFF4F6FB);
+  static const Color ujeDark = Color(0xFF1A2340);
 
-  //This is Handling data from the backend passing it to the frontend
-  //
-
-  String agmId = "";
-  String company = "";
-  String meetingInfo = "";
-  String cdsString = "";
   String responseVoteMessage = "";
-  String name = " ";
-  String cdsNo = "";
-  String shares = "";
-  String regStatus = " ";
-  String resolution1 = "";
-  List resolutions = [];
-  List nominees = [];
-  bool isVisible = false;
-  String nomineeName = "";
-  List orderNumbers = [];
-  List resolutionNumbers = [];
-  String voteCode = "";
-  VoterModel voterModel = VoterModel();
-  int onSelected = 0;
-  String resNumber = "";
-
-  String voteType = "";
   List<CandidateModel> candidates = [];
-  String resolutionText = "";
-  String resolutionNo = "";
-  String cardState = "";
-
+  String voteType = "";
   String voteStatus = "";
+
+  late AnimationController _animController;
+  late Animation<double> _fadeAnim;
 
   @override
   void initState() {
-    getAllCandidateList(widget.resNumber);
     super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _fadeAnim =
+        CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.loaderOverlay.show();
+      getAllCandidateList(widget.resNumber);
+    });
   }
 
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  // ── Helpers ───────────────────────────────────────────
+
+  void _showUjeToast(String msg) {
+    Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: ujeBlue,
+      textColor: Colors.white,
+      fontSize: 14.0,
+      timeInSecForIosWeb: 3,
+    );
+  }
+
+  // ── API Methods ───────────────────────────────────────
+
   getAllCandidateList(String resoNumber) async {
-    String candidateListUrl =
-        "$baseApiUrl/getCandidateListProxyALL";
-    debugPrint("TESTING PURPOSES: $resoNumber");
+    String candidateListUrl = "$baseApiUrl/getCandidateListProxyALL";
     final response = await http.post(
       Uri.parse(candidateListUrl),
       body: {"resNo": resoNumber},
     );
-
     if (response.statusCode == 200) {
       final responseJson = json.decode(response.body);
-
+      candidates.clear();
       for (int i = 0; i < responseJson.length; i++) {
-        CandidateModel candidateModel =
-            CandidateModel.fromJson(responseJson[i]);
-        candidates.add(candidateModel);
+        candidates.add(CandidateModel.fromJson(responseJson[i]));
       }
-      resoNumber = responseJson[0]["resNo"].toString();
-
-      setState(() {
-        resoNumber = responseJson[0]["resNo"].toString();
-        debugPrint("$responseJson");
-      });
+      setState(() {});
+      _animController.forward(from: 0);
     } else {
       debugPrint('Error failed to retrieve candidates');
     }
@@ -108,13 +107,7 @@ class _ProxyElectionAllVotePageState extends State<ProxyElectionAllVotePage> {
 
   handleElectionVoteAll(String resolutionSEQ, String proxyNumber,
       String orderNumber, String voteType) async {
-    String voteUrl =
-        "$baseApiUrl/VoteForProxyResElectALL";
-    // debugPrint("Resolution Number: $resoNumber");
-
-    debugPrint(
-        "RESOLUTION SEQUENCE   $resolutionSEQ ::::: PROXY NUMBER $proxyNumber  ::::: VOTETYPE $orderNumber");
-
+    String voteUrl = "$baseApiUrl/VoteForProxyResElectALL";
     final response = await http.post(
       Uri.parse(voteUrl),
       body: {
@@ -127,406 +120,523 @@ class _ProxyElectionAllVotePageState extends State<ProxyElectionAllVotePage> {
     final responseJson = json.decode(response.body);
     if (response.statusCode == 200) {
       if (responseJson[0]["responseCode"] == 0) {
-        debugPrint('SUCCESSFUL!!! \n $responseJson');
-        Fluttertoast.showToast(
-            msg: "${responseJson[0]["responseMessage"]}",
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.grey,
-            textColor: Colors.black,
-            fontSize: 12.0);
-        context.loaderOverlay.hide();
-
+        _showUjeToast(responseJson[0]["responseMessage"]);
         setState(() {
-          responseVoteMessage = responseJson[0]["responseMessage"].toString();
+          responseVoteMessage =
+              responseJson[0]["responseMessage"].toString();
         });
-
-        context.loaderOverlay.hide();
       }
     } else {
-      debugPrint('Error failed');
-      Fluttertoast.showToast(
-          msg: "Vote Failed:  ${responseJson[0]["responseMessage"]}",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.grey,
-          textColor: Colors.black,
-          fontSize: 12.0);
-
-      context.loaderOverlay.hide();
+      _showUjeToast(
+          "Vote Failed: ${responseJson[0]["responseMessage"]}");
     }
-    getAllCandidateList(widget.resNumber);
     context.loaderOverlay.hide();
+    getAllCandidateList(widget.resNumber);
   }
+
+  // ── Build ─────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
-    String resNumber = widget.resNumber;
-    String cdsString = widget.cdsString;
-    String voteDetails = widget.voteDetails;
-    final currentWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
+      backgroundColor: ujeBackground,
       appBar: AppBar(
-          title: const Text("Election Vote"),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-              context.loaderOverlay.hide();
-            },
-          )),
-      body: currentWidth <= 540
-          ? SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              padding: const EdgeInsets.all(4.0),
-              child: Column(
-                children: [
-                  Text(
-                    voteDetails,
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  MaterialButton(
-                      elevation: 0.0,
-                      color: Colors.grey[50],
-                      onPressed: () {
-                        context.loaderOverlay.show();
-
-                        setState(() {
-                          // getCandidateList(resNumber, cdsString);
-
-                          getAllCandidateList(resNumber);
-                        });
-                      },
-                      child: const Text("")),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.4,
-                      width: MediaQuery.of(context).size.width,
-                      child: ListView.builder(
-                          itemCount: candidates.length,
-                          itemBuilder: (context, index) {
-                            return candidateTile(
-                              context,
-                              candidates[index].nomineeName!,
-                              cdsString,
-                              candidates[index].orderNumber!,
-                              candidates[index].resNo!,
-                              candidates[index].resExistingVote!,
-                            );
-                          }),
-                    ),
-                  ),
-                  MaterialButton(
-                    height: 60,
-                    minWidth: 150,
-                    onPressed: () {
-                      candidates.clear();
-                      showToast(context, "Voted successfully");
-                      Navigator.pop(context);
-                    },
-                    color: Colors.green[800],
-                    child: const Text("SUBMIT",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        )),
-                  )
-                ],
-              ),
-            ) // landscape view
-          : Container(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                padding: const EdgeInsets.all(4.0),
-                child: Column(
-                  children: [
-                    Text(
-                      voteDetails,
-                      style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    MaterialButton(
-                        elevation: 0.0,
-                        color: Colors.grey[50],
-                        onPressed: () {
-                          context.loaderOverlay.show();
-
-                          setState(() {
-                            // getCandidateList(resNumber, cdsString);
-
-                            getAllCandidateList(resNumber);
-                          });
-                        },
-                        child: const Text("")),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.4,
-                        width: MediaQuery.of(context).size.width,
-                        child: ListView.builder(
-                            itemCount: candidates.length,
-                            itemBuilder: (context, index) {
-                              return candidateTile(
-                                context,
-                                candidates[index].nomineeName!,
-                                cdsString,
-                                candidates[index].orderNumber!,
-                                candidates[index].resNo!,
-                                candidates[index].resExistingVote!,
-                              );
-                            }),
-                      ),
-                    ),
-                    MaterialButton(
-                      height: 60,
-                      minWidth: 150,
-                      onPressed: () {
-                        candidates.clear();
-                        showToast(context, "Voted successfully");
-                        Navigator.pop(context);
-                      },
-                      color: Colors.green[800],
-                      child: const Text("SUBMIT",
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          )),
-                    )
-                  ],
-                ),
+        backgroundColor: ujeBlue,
+        foregroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+            context.loaderOverlay.hide();
+          },
+        ),
+        title: const Text(
+          'Election Vote',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Colors.white),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4),
+          child: Container(
+            height: 4,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [ujeGold, Color(0xFFFFE082)],
               ),
             ),
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          // ── Resolution Banner ─────────────────────
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [ujeBlue, Color(0xFF0D3A7A)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: ujeBlue.withOpacity(0.25),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.how_to_vote,
+                      color: Colors.white, size: 22),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: ujeGold.withOpacity(0.25),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                  color: ujeGold.withOpacity(0.5)),
+                            ),
+                            child: Text(
+                              'Res. ${widget.resNumber}',
+                              style: const TextStyle(
+                                color: Color(0xFFFFE082),
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              '${candidates.length} Candidates',
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        widget.voteDetails,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          height: 1.3,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Section Label ─────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
+            child: Row(
+              children: [
+                Container(
+                  width: 4,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: ujeGold,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'CANDIDATES',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: ujeGold,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+                const Spacer(),
+                // Voted count badge
+                if (candidates.isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${candidates.where((c) => c.resExistingVote == "1").length} voted',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.green[700],
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                const SizedBox(width: 8),
+                // Refresh button
+                GestureDetector(
+                  onTap: () {
+                    context.loaderOverlay.show();
+                    getAllCandidateList(widget.resNumber);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: ujeBlue.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.refresh,
+                        color: ujeBlue, size: 16),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Candidates List ───────────────────────
+          Expanded(
+            child: candidates.isEmpty
+                ? _emptyState()
+                : FadeTransition(
+              opacity: _fadeAnim,
+              child: ListView.builder(
+                padding:
+                const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                itemCount: candidates.length,
+                itemBuilder: (context, index) {
+                  return _candidateTile(
+                    context,
+                    index,
+                    candidates[index].nomineeName!,
+                    widget.cdsString,
+                    candidates[index].orderNumber!,
+                    candidates[index].resNo!,
+                    candidates[index].resExistingVote!,
+                  );
+                },
+              ),
+            ),
+          ),
+
+          // ── Submit Button ─────────────────────────
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 10,
+                  offset: const Offset(0, -4),
+                ),
+              ],
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.check_circle_outline,
+                    color: Colors.white, size: 20),
+                label: const Text(
+                  'SUBMIT VOTES',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ujeBlue,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  elevation: 3,
+                ),
+                onPressed: () {
+                  candidates.clear();
+                  showToast(context, "Voted successfully");
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget candidateTile(
-    BuildContext context,
-    String nomineeName,
-    String cdsString,
-    String orderNumber,
-    String resolutionNumber,
-    String resExistingVote,
-  ) {
-    final currentWidth = MediaQuery.of(context).size.width;
+  // ── Empty State ───────────────────────────────────────
 
-    return currentWidth <= 540
-        ? Card(
-            elevation: 5.0,
-            child: Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: 150,
-                      child: Text(
-                        nomineeName,
-                        style: const TextStyle(fontSize: 11.0),
-                      ),
+  Widget _emptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration: const BoxDecoration(
+              color: ujeLightBlue,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.people_outline,
+                color: ujeBlue, size: 34),
+          ),
+          const SizedBox(height: 14),
+          const Text(
+            'No Candidates',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: ujeDark,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Candidates will appear here once loaded.',
+            style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.refresh,
+                color: Colors.white, size: 16),
+            label: const Text('Retry',
+                style: TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ujeBlue,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              context.loaderOverlay.show();
+              getAllCandidateList(widget.resNumber);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Candidate Tile ────────────────────────────────────
+
+  Widget _candidateTile(
+      BuildContext context,
+      int index,
+      String nomineeName,
+      String cdsString,
+      String orderNumber,
+      String resolutionNumber,
+      String resExistingVote,
+      ) {
+    final bool hasVoted = resExistingVote == "1";
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: hasVoted ? ujeLightBlue : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: hasVoted
+              ? ujeBlue.withOpacity(0.35)
+              : ujeBlue.withOpacity(0.1),
+          width: hasVoted ? 1.5 : 1.0,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: ujeBlue.withOpacity(hasVoted ? 0.1 : 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: 14, vertical: 12),
+        child: Row(
+          children: [
+            // Index / voted avatar
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: hasVoted
+                    ? ujeBlue
+                    : Colors.grey.withOpacity(0.1),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: hasVoted
+                      ? ujeBlue
+                      : Colors.grey.withOpacity(0.2),
+                ),
+              ),
+              child: Center(
+                child: hasVoted
+                    ? const Icon(Icons.how_to_vote,
+                    color: Colors.white, size: 18)
+                    : Text(
+                  '${index + 1}',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+
+            // Name + vote cast label
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    nomineeName,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: hasVoted ? ujeBlue : ujeDark,
+                      height: 1.3,
                     ),
+                  ),
+                  if (hasVoted) ...[
+                    const SizedBox(height: 3),
                     Row(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: MaterialButton(
-                              height: 30,
-                              minWidth: 30,
-                              onPressed: () {
-                                context.loaderOverlay.show();
-                                handleElectionVoteAll(widget.resolutionSEQ,
-                                    widget.proxyNumber, orderNumber, "1");
-                                // postCandidateVote(
-                                //     cdsString, orderNumber, resolutionNumber, "1");
-                                candidates.clear();
-                              },
-                              color: Colors.green[800],
-                              child: resExistingVote == "1"
-                                  ? Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: const [
-                                        Icon(Icons.check),
-                                        Text("Yes",
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.bold,
-                                            ))
-                                      ],
-                                    )
-                                  : const Text("Yes",
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                      ))),
-                        ),
-                        // Padding(
-                        //   padding: const EdgeInsets.all(2.0),
-                        //   child: MaterialButton(
-                        //       height: 30,
-                        //       minWidth: 30,
-                        //       onPressed: () {
-                        //         context.loaderOverlay.show();
-                        //         handleElectionVoteAll(widget.resolutionSEQ,
-                        //             widget.proxyNumber, orderNumber, "2");
-                        //         candidates.clear();
-                        //       },
-                        //       color: Colors.amber,
-                        //       child: resExistingVote == "2"
-                        //           ? Row(
-                        //               children: const [
-                        //                 Icon(Icons.clear),
-                        //                 Text("No",
-                        //                     style: TextStyle(
-                        //                       fontSize: 11,
-                        //                       fontWeight: FontWeight.bold,
-                        //                     ))
-                        //               ],
-                        //             )
-                        //           : const Text("No",
-                        //               style: TextStyle(
-                        //                 fontSize: 11,
-                        //                 fontWeight: FontWeight.bold,
-                        //               ))),
-                        // ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: MaterialButton(
-                              height: 30,
-                              minWidth: 30,
-                              onPressed: () {
-                                context.loaderOverlay.show();
-                                handleElectionVoteAll(widget.resolutionSEQ,
-                                    widget.proxyNumber, orderNumber, "3");
-                                candidates.clear();
-                              },
-                              color: Colors.amber[100],
-                              child: const Text("Recast",
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                  ))),
+                        Icon(Icons.check_circle,
+                            color: Colors.green[600], size: 12),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Vote cast',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.green[600],
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
-                  ]),
+                  ],
+                ],
+              ),
             ),
-          ) //LANDSCAPE PRESENTATION
-        : Container(
-            child: Card(
-            elevation: 5.0,
-            child: Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: 500,
-                      child: Text(
-                        nomineeName,
-                        style: const TextStyle(fontSize: 19.0),
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: MaterialButton(
-                              height: 50,
-                              minWidth: 120,
-                              onPressed: () {
-                                context.loaderOverlay.show();
-                                handleElectionVoteAll(widget.resolutionSEQ,
-                                    widget.proxyNumber, orderNumber, "1");
-                                // postCandidateVote(
-                                //     cdsString, orderNumber, resolutionNumber, "1");
-                                candidates.clear();
-                              },
-                              color: Colors.green[800],
-                              child: resExistingVote == "1"
-                                  ? Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: const [
-                                        Icon(Icons.check),
-                                        Text("Yes",
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ))
-                                      ],
-                                    )
-                                  : const Text("Yes",
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ))),
-                        ),
-                        // Padding(
-                        //   padding: const EdgeInsets.all(8.0),
-                        //   child: MaterialButton(
-                        //       height: 50,
-                        //       minWidth: 120,
-                        //       onPressed: () {
-                        //         context.loaderOverlay.show();
-                        //         handleElectionVoteAll(widget.resolutionSEQ,
-                        //             widget.proxyNumber, orderNumber, "2");
-                        //         candidates.clear();
-                        //       },
-                        //       color: Colors.amber,
-                        //       child: resExistingVote == "2"
-                        //           ? Row(
-                        //               mainAxisAlignment:
-                        //                   MainAxisAlignment.spaceEvenly,
-                        //               children: const [
-                        //                 Icon(Icons.clear),
-                        //                 Text("No",
-                        //                     style: TextStyle(
-                        //                       fontSize: 20,
-                        //                       fontWeight: FontWeight.bold,
-                        //                     ))
-                        //               ],
-                        //             )
-                        //           : const Text("No",
-                        //               style: TextStyle(
-                        //                 fontSize: 20,
-                        //                 fontWeight: FontWeight.bold,
-                        //               ))),
-                        // ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: MaterialButton(
-                              height: 50,
-                              minWidth: 120,
-                              onPressed: () {
-                                context.loaderOverlay.show();
-                                handleElectionVoteAll(widget.resolutionSEQ,
-                                    widget.proxyNumber, orderNumber, "3");
-                                candidates.clear();
-                              },
-                              color: Colors.amber[100],
-                              child: const Text("Recast",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ))),
-                        ),
-                      ],
-                    ),
-                  ]),
+
+            const SizedBox(width: 8),
+
+            // Vote button
+            SizedBox(
+              height: 36,
+              child: ElevatedButton.icon(
+                icon: Icon(
+                  hasVoted ? Icons.check : Icons.how_to_vote_outlined,
+                  size: 14,
+                  color: Colors.white,
+                ),
+                label: Text(
+                  hasVoted ? 'Voted' : 'Vote',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                  hasVoted ? Colors.green[600] : ujeBlue,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  elevation: hasVoted ? 0 : 2,
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 12),
+                ),
+                onPressed: () {
+                  context.loaderOverlay.show();
+                  handleElectionVoteAll(
+                    widget.resolutionSEQ,
+                    widget.proxyNumber,
+                    orderNumber,
+                    "1",
+                  );
+                  setState(() => candidates.clear());
+                },
+              ),
             ),
-          ));
+
+            const SizedBox(width: 6),
+
+            // Recast button
+            SizedBox(
+              height: 36,
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                      color: Colors.amber[600]!, width: 1.2),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 10),
+                ),
+                onPressed: () {
+                  context.loaderOverlay.show();
+                  handleElectionVoteAll(
+                    widget.resolutionSEQ,
+                    widget.proxyNumber,
+                    orderNumber,
+                    "3",
+                  );
+                  setState(() => candidates.clear());
+                },
+                child: Text(
+                  'Recast',
+                  style: TextStyle(
+                    color: Colors.amber[700],
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
