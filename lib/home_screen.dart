@@ -285,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen>
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Welcome to UJE Member Portal',
+                          'Welcome to AGM Portal',
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.95),
                             fontSize: 13,

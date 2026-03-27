@@ -102,7 +102,6 @@ class _ProxyPageState extends State<ProxyPage> {
 
   confirmName(String shareholderNumber) async {
     String nameConfirmUrl = '$baseApiUrl/RegisterGetDetailsProxy';
-    debugPrint("ShareHolderNumber is $shareholderNumber");
     final response = await http.post(
       Uri.parse(nameConfirmUrl),
       body: {
@@ -187,8 +186,8 @@ class _ProxyPageState extends State<ProxyPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape:
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16)),
         title: const Text('Notice',
             style: TextStyle(
                 fontWeight: FontWeight.bold, color: ujeBlue)),
@@ -201,8 +200,8 @@ class _ProxyPageState extends State<ProxyPage> {
                   borderRadius: BorderRadius.circular(8)),
             ),
             onPressed: () => Navigator.of(ctx).pop(),
-            child:
-            const Text('OK', style: TextStyle(color: Colors.white)),
+            child: const Text('OK',
+                style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -216,15 +215,16 @@ class _ProxyPageState extends State<ProxyPage> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16)),
           title: const Text('Registration Successful',
               style: TextStyle(
                   fontWeight: FontWeight.bold, color: ujeBlue)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.check_circle, color: Colors.green, size: 50),
+              const Icon(Icons.check_circle,
+                  color: Colors.green, size: 50),
               const SizedBox(height: 16),
               const Text('Your Proxy Number is:',
                   style: TextStyle(color: Colors.grey)),
@@ -235,7 +235,8 @@ class _ProxyPageState extends State<ProxyPage> {
                 decoration: BoxDecoration(
                   color: ujeLightBlue,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: ujeBlue.withOpacity(0.3)),
+                  border:
+                  Border.all(color: ujeBlue.withOpacity(0.3)),
                 ),
                 child: Text(
                   proxyNumber,
@@ -260,7 +261,8 @@ class _ProxyPageState extends State<ProxyPage> {
                       borderRadius: BorderRadius.circular(10)),
                 ),
                 child: const Text('OK',
-                    style: TextStyle(color: Colors.white, fontSize: 16)),
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 16)),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -272,7 +274,6 @@ class _ProxyPageState extends State<ProxyPage> {
 
   // ── Helper Widgets ────────────────────────────────────
 
-  /// Styled section card with a title
   Widget _sectionCard({required String title, required Widget child}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -290,14 +291,13 @@ class _ProxyPageState extends State<ProxyPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Card header
           Container(
-            padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(
+                horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
               color: ujeBlue.withOpacity(0.06),
-              borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16)),
               border: Border(
                   bottom: BorderSide(
                       color: ujeBlue.withOpacity(0.1), width: 1)),
@@ -334,7 +334,6 @@ class _ProxyPageState extends State<ProxyPage> {
     );
   }
 
-  /// Styled text field
   Widget _styledField({
     required TextEditingController controller,
     required String label,
@@ -342,45 +341,47 @@ class _ProxyPageState extends State<ProxyPage> {
     bool enabled = true,
     TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
-    String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
       enabled: enabled,
       keyboardType: keyboardType,
       maxLines: maxLines,
-      validator: validator,
       style: const TextStyle(fontSize: 14, color: ujeDark),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        labelStyle:
-        TextStyle(color: ujeBlue.withOpacity(0.7), fontSize: 13),
+        labelStyle: TextStyle(
+            color: ujeBlue.withOpacity(0.7), fontSize: 13),
         filled: true,
-        fillColor: enabled ? Colors.white : const Color(0xFFF0F4FF),
-        contentPadding:
-        const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        fillColor:
+        enabled ? Colors.white : const Color(0xFFF0F4FF),
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: ujeBlue.withOpacity(0.2)),
+          borderSide:
+          BorderSide(color: ujeBlue.withOpacity(0.2)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: ujeBlue.withOpacity(0.25)),
+          borderSide:
+          BorderSide(color: ujeBlue.withOpacity(0.25)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: ujeBlue, width: 1.5),
+          borderSide:
+          const BorderSide(color: ujeBlue, width: 1.5),
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
+          borderSide: BorderSide(
+              color: Colors.grey.withOpacity(0.2)),
         ),
       ),
     );
   }
 
-  /// Search button
   Widget _searchButton(
       {required VoidCallback? onPressed, bool enabled = true}) {
     return SizedBox(
@@ -434,7 +435,7 @@ class _ProxyPageState extends State<ProxyPage> {
           key: registrationKey2,
           child: Column(
             children: [
-              // ── 1. Shareholder Proxy Toggle ───────────
+              // ── 1. Proxy Type Toggle ──────────────────
               _sectionCard(
                 title: 'PROXY TYPE',
                 child: Container(
@@ -475,7 +476,7 @@ class _ProxyPageState extends State<ProxyPage> {
                 ),
               ),
 
-              // ── 2. Shareholder Proxy CDS (if toggle ON) ──
+              // ── 2. Shareholder Proxy CDS ──────────────
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 height: isShareholder ? null : 0,
@@ -485,7 +486,8 @@ class _ProxyPageState extends State<ProxyPage> {
                   child: Column(
                     children: [
                       _styledField(
-                        controller: postShareholderCdsController,
+                        controller:
+                        postShareholderCdsController,
                         label: 'CDS Number',
                         hint: 'Enter your CDS No.',
                         enabled: isShareholder,
@@ -497,7 +499,8 @@ class _ProxyPageState extends State<ProxyPage> {
                           enabled: isShareholder,
                           onPressed: isShareholder
                               ? () {
-                            context.loaderOverlay.show();
+                            context.loaderOverlay
+                                .show();
                             confirmName(
                                 postShareholderCdsController
                                     .text);
@@ -563,57 +566,61 @@ class _ProxyPageState extends State<ProxyPage> {
                 ),
               ),
 
-              // ── 5. Banking Details ────────────────────
+              // ── 5. Banking & Verification (optional) ──
               _sectionCard(
-                title: 'BANKING & VERIFICATION',
+                title: 'BANKING & VERIFICATION (OPTIONAL)',
                 child: Column(
                   children: [
                     _styledField(
                       controller: tinNumberController,
-                      label: 'TIN Number',
+                      label: 'TIN Number (Optional)',
                       hint: 'Enter TIN No.',
                       keyboardType: TextInputType.number,
-                      validator: (val) => (val == null || val.isEmpty)
-                          ? 'Please enter a TIN Number'
-                          : null,
                     ),
                     const SizedBox(height: 12),
-                    // Bank Dropdown
+                    // Bank Dropdown — no validator
                     DropdownButtonFormField<String>(
                       value: bankName,
                       decoration: InputDecoration(
-                        labelText: 'Select Bank',
+                        labelText: 'Select Bank (Optional)',
                         labelStyle: TextStyle(
                             color: ujeBlue.withOpacity(0.7),
                             fontSize: 13),
                         filled: true,
                         fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(
+                        contentPadding:
+                        const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 12),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius:
+                          BorderRadius.circular(10),
                           borderSide: BorderSide(
                               color: ujeBlue.withOpacity(0.2)),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius:
+                          BorderRadius.circular(10),
                           borderSide: BorderSide(
-                              color: ujeBlue.withOpacity(0.25)),
+                              color:
+                              ujeBlue.withOpacity(0.25)),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius:
+                          BorderRadius.circular(10),
                           borderSide: const BorderSide(
                               color: ujeBlue, width: 1.5),
                         ),
                       ),
-                      icon: const Icon(Icons.keyboard_arrow_down,
+                      icon: const Icon(
+                          Icons.keyboard_arrow_down,
                           color: ujeBlue),
                       items: banks.map((item) {
                         return DropdownMenuItem(
                             value: item, child: Text(item));
                       }).toList(),
                       onChanged: (String? newValue) {
-                        if (newValue != null && newValue != bankName) {
+                        if (newValue != null &&
+                            newValue != bankName) {
                           setState(() => bankName = newValue);
                         }
                       },
@@ -621,29 +628,27 @@ class _ProxyPageState extends State<ProxyPage> {
                     const SizedBox(height: 12),
                     _styledField(
                       controller: mobileNumberController,
-                      label: 'Mobile Number',
+                      label: 'Mobile Number (Optional)',
                       hint: 'Enter mobile No.',
-                      validator: (val) => (val == null || val.isEmpty)
-                          ? 'Please enter a Mobile Number'
-                          : null,
                     ),
                     const SizedBox(height: 12),
                     _styledField(
                       controller: accountNumberController,
-                      label: 'Account Number',
+                      label: 'Account Number (Optional)',
                       hint: 'Enter account No.',
-                      validator: (val) => (val == null || val.isEmpty)
-                          ? 'Please enter an Account Number'
-                          : null,
+                      keyboardType: TextInputType.number,
                     ),
                     const SizedBox(height: 14),
-                    // Add (+) button
+
+                    // ── Add Shareholder Button ────────────
                     SizedBox(
                       width: double.infinity,
                       height: 44,
                       child: ElevatedButton.icon(
-                        icon: const Icon(Icons.add_circle_outline,
-                            color: Colors.white, size: 18),
+                        icon: const Icon(
+                            Icons.add_circle_outline,
+                            color: Colors.white,
+                            size: 18),
                         label: const Text('Add Shareholder',
                             style: TextStyle(
                                 color: Colors.white,
@@ -651,23 +656,21 @@ class _ProxyPageState extends State<ProxyPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ujeGold,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
+                              borderRadius:
+                              BorderRadius.circular(10)),
                           elevation: 2,
                         ),
                         onPressed: () {
-                          if (registrationKey2.currentState!
-                              .validate()) {
-                            AddProxyShareholderModel model =
-                            AddProxyShareholderModel(
-                              cdsNumberController.text,
-                              proxyNameController.text,
-                              mobileNumberController.text,
-                              tinNumberController.text,
-                              bankName,
-                              accountNumberController.text,
-                            );
-                            addValue(model);
-                          }
+                          AddProxyShareholderModel model =
+                          AddProxyShareholderModel(
+                            cdsNumberController.text,
+                            proxyNameController.text,
+                            mobileNumberController.text,
+                            tinNumberController.text,
+                            bankName,
+                            accountNumberController.text,
+                          );
+                          addValue(model);
                         },
                       ),
                     ),
@@ -684,8 +687,8 @@ class _ProxyPageState extends State<ProxyPage> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
-                    border:
-                    Border.all(color: ujeBlue.withOpacity(0.2)),
+                    border: Border.all(
+                        color: ujeBlue.withOpacity(0.2)),
                     boxShadow: [
                       BoxShadow(
                         color: ujeBlue.withOpacity(0.06),
@@ -695,7 +698,8 @@ class _ProxyPageState extends State<ProxyPage> {
                     ],
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
@@ -716,12 +720,14 @@ class _ProxyPageState extends State<ProxyPage> {
                       const SizedBox(height: 10),
                       ...data.asMap().entries.map((entry) {
                         return Container(
-                          margin: const EdgeInsets.only(bottom: 6),
+                          margin:
+                          const EdgeInsets.only(bottom: 6),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
                             color: ujeLightBlue,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius:
+                            BorderRadius.circular(8),
                           ),
                           child: Row(
                             children: [
@@ -738,7 +744,8 @@ class _ProxyPageState extends State<ProxyPage> {
                                     style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 11,
-                                        fontWeight: FontWeight.bold),
+                                        fontWeight:
+                                        FontWeight.bold),
                                   ),
                                 ),
                               ),
@@ -749,7 +756,8 @@ class _ProxyPageState extends State<ProxyPage> {
                                   style: const TextStyle(
                                       fontSize: 13,
                                       color: ujeDark,
-                                      fontWeight: FontWeight.w500),
+                                      fontWeight:
+                                      FontWeight.w500),
                                 ),
                               ),
                             ],
@@ -773,7 +781,8 @@ class _ProxyPageState extends State<ProxyPage> {
                   ),
                   onPressed: () async {
                     if (proxyNameController.text.isEmpty) {
-                      _showUjeToast("Please enter a Proxy Name!");
+                      _showUjeToast(
+                          "Please enter a Proxy Name!");
                     } else if (data.isEmpty) {
                       _showUjeToast(
                           "Please add at least 1 Shareholder!");
@@ -800,11 +809,13 @@ class _ProxyPageState extends State<ProxyPage> {
                           shareholderProxyCDS,
                           context);
                       Future.delayed(
-                          const Duration(milliseconds: 400), () {
-                        if (proxyNumb != "") {
-                          _showProxyNumberDialog(context, proxyNumb);
-                        }
-                      });
+                          const Duration(milliseconds: 400),
+                              () {
+                            if (proxyNumb != "") {
+                              _showProxyNumberDialog(
+                                  context, proxyNumb);
+                            }
+                          });
                       setState(() {
                         cdsNumberController.text = "";
                         shareHolderController.text = "";

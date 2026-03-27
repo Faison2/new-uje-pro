@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 
 
-//String baseApiUrl = "https://creg.crdbbank.co.tz/APPAPI/Home";
-String baseApiUrl = "https://cregtest.crdbbank.co.tz/APPAPI/Home";
+String baseApiUrl = "https://creg.crdbbank.co.tz/APPAPIUJE/Home";
+//String baseApiUrl = "https://cregtest.crdbbank.co.tz/APPAPI/Home";
 
 List<String> banks = [];
 
