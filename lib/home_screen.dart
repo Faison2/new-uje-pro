@@ -26,14 +26,15 @@ class _HomeScreenState extends State<HomeScreen>
   late Animation<double> _headerFade;
   late Animation<double> _pulseAnim;
 
-  // ── Brand Palette ───────────────────────────────────────
-  static const Color ujeBlue      = Color(0xFF0D2E6E);
-  static const Color ujeMidBlue   = Color(0xFF1A4FA0);
-  static const Color ujeGold      = Color(0xFFB8891A);
-  static const Color ujeGoldLight = Color(0xFFE6AA30);
-  static const Color ujeBackground= Color(0xFFF0F3FA);
-  static const Color ujeSurface   = Color(0xFFFFFFFF);
-  static const Color ujeDivider   = Color(0xFFDDE4F0);
+  // ── CRDB Brand Palette ──────────────────────────────────
+  static const Color crdbGreen       = Color(0xFF3AAA35);   // Primary CRDB green
+  static const Color crdbDarkGreen   = Color(0xFF1E7A1A);   // Deep forest green
+  static const Color crdbMidGreen    = Color(0xFF2D9128);   // Mid-tone green
+  static const Color crdbLightGreen  = Color(0xFF57C752);   // Highlight green
+  static const Color crdbBackground  = Color(0xFFF2FAF2);   // Soft green-white
+  static const Color crdbSurface     = Color(0xFFFFFFFF);   // Pure white
+  static const Color crdbDivider     = Color(0xFFD4EDDA);   // Soft green divider
+  static const Color crdbTextDark    = Color(0xFF0D2B0C);   // Near-black green text
 
   @override
   void initState() {
@@ -111,11 +112,11 @@ class _HomeScreenState extends State<HomeScreen>
         child: Container(
           padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
-            color: ujeSurface,
+            color: crdbSurface,
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: ujeBlue.withOpacity(0.15),
+                color: crdbDarkGreen.withOpacity(0.15),
                 blurRadius: 40,
                 offset: const Offset(0, 16),
               ),
@@ -127,8 +128,8 @@ class _HomeScreenState extends State<HomeScreen>
               Container(
                 width: 56,
                 height: 56,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFEEEE),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFEEEE),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.logout_rounded,
@@ -140,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen>
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
-                  color: ujeBlue,
+                  color: crdbDarkGreen,
                   letterSpacing: -0.3,
                 ),
               ),
@@ -210,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen>
     return PopScope(
       onPopInvoked: (popped) => _onWillPop(),
       child: Scaffold(
-        backgroundColor: ujeBackground,
+        backgroundColor: crdbBackground,
         body: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
@@ -241,21 +242,21 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                     const SizedBox(width: 10),
                     const Text(
-                      'UJE',
+                      'CRDB BANK',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
-                        fontSize: 20,
+                        fontSize: 18,
                         letterSpacing: 1,
                       ),
                     ),
                   ],
                 ),
               ),
-              backgroundColor: ujeBlue,
+              backgroundColor: crdbDarkGreen,
             ),
 
-            // ── Quick-Stats Banner ───────────────────────
+            // ── Welcome Banner ───────────────────────────
             SliverToBoxAdapter(
               child: FadeTransition(
                 opacity: _headerFade,
@@ -265,14 +266,14 @@ class _HomeScreenState extends State<HomeScreen>
                       horizontal: 20, vertical: 14),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [ujeBlue, ujeMidBlue],
+                      colors: [crdbDarkGreen, crdbMidGreen],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     ),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: ujeBlue.withOpacity(0.3),
+                        color: crdbDarkGreen.withOpacity(0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
@@ -281,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen>
                   child: Row(
                     children: [
                       const Icon(Icons.verified_rounded,
-                          color: Color(0xFFE6AA30), size: 22),
+                          color: Colors.white, size: 22),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -298,15 +299,15 @@ class _HomeScreenState extends State<HomeScreen>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: ujeGoldLight.withOpacity(0.2),
+                          color: Colors.white.withOpacity(0.18),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                              color: ujeGoldLight.withOpacity(0.5)),
+                              color: Colors.white.withOpacity(0.5)),
                         ),
                         child: const Text(
                           'LIVE',
                           style: TextStyle(
-                            color: Color(0xFFE6AA30),
+                            color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 1.5,
@@ -330,7 +331,7 @@ class _HomeScreenState extends State<HomeScreen>
                     _SectionHeader(
                       label: 'SHAREHOLDER SERVICES',
                       icon: Icons.people_alt_rounded,
-                      color: ujeBlue,
+                      color: crdbDarkGreen,
                     ),
                     const SizedBox(height: 14),
                     Row(
@@ -344,10 +345,10 @@ class _HomeScreenState extends State<HomeScreen>
                                 icon: Icons.how_to_reg_rounded,
                                 label: 'Shareholder\nRegistration',
                                 description: 'Register as a member',
-                                accentColor: ujeBlue,
+                                accentColor: crdbDarkGreen,
                                 gradientColors: const [
-                                  Color(0xFF0D2E6E),
-                                  Color(0xFF1A4FA0),
+                                  Color(0xFF1E7A1A),
+                                  Color(0xFF2D9128),
                                 ],
                                 onTap: () => Navigator.push(
                                   context,
@@ -367,10 +368,10 @@ class _HomeScreenState extends State<HomeScreen>
                                 icon: Icons.how_to_vote_rounded,
                                 label: 'Shareholder\nVoting',
                                 description: 'Cast your vote',
-                                accentColor: ujeBlue,
+                                accentColor: crdbDarkGreen,
                                 gradientColors: const [
-                                  Color(0xFF1A4FA0),
-                                  Color(0xFF2D6BC4),
+                                  Color(0xFF2D9128),
+                                  Color(0xFF3AAA35),
                                 ],
                                 onTap: () => Navigator.push(
                                   context,
@@ -389,7 +390,7 @@ class _HomeScreenState extends State<HomeScreen>
                     _SectionHeader(
                       label: 'PROXY SERVICES',
                       icon: Icons.manage_accounts_rounded,
-                      color: ujeGold,
+                      color: crdbMidGreen,
                     ),
                     const SizedBox(height: 14),
                     Row(
@@ -403,10 +404,10 @@ class _HomeScreenState extends State<HomeScreen>
                                 icon: Icons.person_add_alt_1_rounded,
                                 label: 'Proxy\nRegistration',
                                 description: 'Add a proxy member',
-                                accentColor: ujeGold,
+                                accentColor: crdbMidGreen,
                                 gradientColors: const [
-                                  Color(0xFF8A6110),
-                                  Color(0xFFB8891A),
+                                  Color(0xFF3AAA35),
+                                  Color(0xFF57C752),
                                 ],
                                 onTap: () => Navigator.push(
                                   context,
@@ -426,10 +427,10 @@ class _HomeScreenState extends State<HomeScreen>
                                 icon: Icons.ballot_rounded,
                                 label: 'Proxy\nVoting',
                                 description: 'Vote on behalf',
-                                accentColor: ujeGold,
+                                accentColor: crdbMidGreen,
                                 gradientColors: const [
-                                  Color(0xFFB8891A),
-                                  Color(0xFFE6AA30),
+                                  Color(0xFF57C752),
+                                  Color(0xFF7DD978),
                                 ],
                                 onTap: () => Navigator.push(
                                   context,
@@ -445,7 +446,7 @@ class _HomeScreenState extends State<HomeScreen>
                     const SizedBox(height: 40),
 
                     // — Footer —
-                    Divider(color: ujeDivider, thickness: 1),
+                    Divider(color: crdbDivider, thickness: 1),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -454,7 +455,7 @@ class _HomeScreenState extends State<HomeScreen>
                             size: 12, color: Colors.grey[400]),
                         const SizedBox(width: 4),
                         Text(
-                          '${DateTime.now().year} Ushirika Joint Enterprises Ltd',
+                          '${DateTime.now().year} CRDB Bank Plc',
                           style: TextStyle(
                             fontSize: 11,
                             color: Colors.grey[400],
@@ -466,11 +467,12 @@ class _HomeScreenState extends State<HomeScreen>
                     const SizedBox(height: 4),
                     Center(
                       child: Text(
-                        'Together for Sustainable Opportunities',
+                        'The bank that listens',
                         style: TextStyle(
                           fontSize: 10,
-                          color: Colors.grey[400],
+                          color: crdbGreen.withOpacity(0.6),
                           fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -518,6 +520,11 @@ class _HeaderBackground extends StatelessWidget {
     required this.headerFade,
   });
 
+  // CRDB colors referenced locally
+  static const Color crdbDarkGreen  = Color(0xFF1E7A1A);
+  static const Color crdbGreen      = Color(0xFF3AAA35);
+  static const Color crdbLightGreen = Color(0xFF57C752);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -525,20 +532,24 @@ class _HeaderBackground extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF071A3E), Color(0xFF0D2E6E), Color(0xFF1A4FA0)],
+          colors: [
+            Color(0xFF0D4A0A),   // Very dark green
+            Color(0xFF1E7A1A),   // Dark CRDB green
+            Color(0xFF3AAA35),   // Primary CRDB green
+          ],
           stops: [0.0, 0.5, 1.0],
         ),
       ),
       child: Stack(
         children: [
-          // Decorative circles
+          // Decorative pulsing ring — white tint
           Positioned(
             top: -40,
             right: -40,
             child: AnimatedBuilder(
               animation: pulseAnim,
               builder: (_, __) => Opacity(
-                opacity: 0.06,
+                opacity: 0.07,
                 child: Transform.scale(
                   scale: pulseAnim.value,
                   child: Container(
@@ -547,34 +558,36 @@ class _HeaderBackground extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                          color: const Color(0xFFE6AA30), width: 1.5),
+                          color: Colors.white, width: 1.5),
                     ),
                   ),
                 ),
               ),
             ),
           ),
+          // Soft glow blob top-right
           Positioned(
             top: 20,
             right: 20,
             child: AnimatedBuilder(
               animation: pulseAnim,
               builder: (_, __) => Opacity(
-                opacity: 0.08,
+                opacity: 0.09,
                 child: Transform.scale(
                   scale: 1.1 - (pulseAnim.value - 0.85) * 0.3,
                   child: Container(
                     width: 140,
                     height: 140,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFFE6AA30),
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ),
             ),
           ),
+          // Bottom-left soft circle
           Positioned(
             bottom: -20,
             left: -30,
@@ -590,7 +603,7 @@ class _HeaderBackground extends StatelessWidget {
               ),
             ),
           ),
-          // Gold diagonal accent
+          // CRDB green stripe accent at bottom — replaces gold line
           Positioned(
             bottom: 0,
             left: 0,
@@ -601,10 +614,31 @@ class _HeaderBackground extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: [
                     Colors.transparent,
-                    Color(0xFFE6AA30),
-                    Colors.transparent
+                    Colors.white,
+                    Colors.transparent,
                   ],
                 ),
+              ),
+            ),
+          ),
+          // Three horizontal stripes (CRDB brand mark motif) — bottom right
+          Positioned(
+            bottom: 30,
+            right: 20,
+            child: Opacity(
+              opacity: 0.12,
+              child: Column(
+                children: List.generate(3, (i) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2.5),
+                  child: Container(
+                    width: 40 - i * 6.0,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                )),
               ),
             ),
           ),
@@ -616,7 +650,7 @@ class _HeaderBackground extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 20),
-                  // Logo with gold ring
+                  // Logo with animated ring
                   Stack(
                     alignment: Alignment.center,
                     children: [
@@ -630,7 +664,7 @@ class _HeaderBackground extends StatelessWidget {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: const Color(0xFFE6AA30),
+                                color: Colors.white,
                                 width: 1.5,
                               ),
                             ),
@@ -643,7 +677,7 @@ class _HeaderBackground extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.25),
+                              color: Colors.black.withOpacity(0.2),
                               blurRadius: 24,
                               offset: const Offset(0, 8),
                             ),
@@ -654,7 +688,7 @@ class _HeaderBackground extends StatelessWidget {
                         child: Image.asset(
                           'assets/images/logo.PNG',
                           width: 140,
-                          height: 84,
+                          height: 64,
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -662,12 +696,12 @@ class _HeaderBackground extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'USHIRIKA JOINT ENTERPRISES',
+                    'CRDB BANK PLC',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
-                      letterSpacing: 2.0,
+                      letterSpacing: 2.5,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -677,15 +711,16 @@ class _HeaderBackground extends StatelessWidget {
                       Container(
                         width: 24,
                         height: 1,
-                        color: const Color(0xFFE6AA30).withOpacity(0.6),
+                        color: Colors.white.withOpacity(0.5),
                       ),
                       const SizedBox(width: 8),
                       const Text(
-                        'Together for Sustainable Opportunities',
+                        'The bank that listens',
                         style: TextStyle(
-                          color: Color(0xFFD4AF5A),
+                          color: Colors.white,
                           fontSize: 11,
                           fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w500,
                           letterSpacing: 0.4,
                         ),
                       ),
@@ -693,7 +728,7 @@ class _HeaderBackground extends StatelessWidget {
                       Container(
                         width: 24,
                         height: 1,
-                        color: const Color(0xFFE6AA30).withOpacity(0.6),
+                        color: Colors.white.withOpacity(0.5),
                       ),
                     ],
                   ),
@@ -814,7 +849,7 @@ class _ServiceCardState extends State<_ServiceCard>
                 ? []
                 : [
               BoxShadow(
-                color: widget.accentColor.withOpacity(0.22),
+                color: widget.accentColor.withOpacity(0.25),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
                 spreadRadius: -2,
@@ -837,7 +872,7 @@ class _ServiceCardState extends State<_ServiceCard>
                     ),
                   ),
                 ),
-                // Subtle pattern overlay
+                // Subtle circle overlay top-right
                 Positioned(
                   top: -20,
                   right: -20,
@@ -853,6 +888,7 @@ class _ServiceCardState extends State<_ServiceCard>
                     ),
                   ),
                 ),
+                // Subtle circle overlay bottom-left
                 Positioned(
                   bottom: -30,
                   left: -15,
@@ -868,13 +904,34 @@ class _ServiceCardState extends State<_ServiceCard>
                     ),
                   ),
                 ),
+                // CRDB stripe motif — bottom right corner
+                Positioned(
+                  bottom: 14,
+                  right: 14,
+                  child: Opacity(
+                    opacity: 0.15,
+                    child: Column(
+                      children: List.generate(3, (i) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 1.5),
+                        child: Container(
+                          width: 20 - i * 4.0,
+                          height: 2,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(1),
+                          ),
+                        ),
+                      )),
+                    ),
+                  ),
+                ),
                 // Content
                 Padding(
                   padding: const EdgeInsets.all(18),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Icon in frosted circle
+                      // Icon in frosted rounded square
                       Container(
                         width: 46,
                         height: 46,
@@ -882,7 +939,7 @@ class _ServiceCardState extends State<_ServiceCard>
                           color: Colors.white.withOpacity(0.18),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.25),
+                            color: Colors.white.withOpacity(0.28),
                             width: 1,
                           ),
                         ),
@@ -909,7 +966,7 @@ class _ServiceCardState extends State<_ServiceCard>
                           Text(
                             widget.description,
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.65),
+                              color: Colors.white.withOpacity(0.70),
                               fontSize: 10,
                               fontWeight: FontWeight.w500,
                               letterSpacing: 0.2,
@@ -920,7 +977,7 @@ class _ServiceCardState extends State<_ServiceCard>
                             width: 24,
                             height: 24,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.15),
+                              color: Colors.white.withOpacity(0.18),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
