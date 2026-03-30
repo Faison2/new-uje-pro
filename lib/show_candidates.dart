@@ -15,12 +15,15 @@ class ShowCandidatesPage extends StatefulWidget {
 
 class _ShowCandidatesPageState extends State<ShowCandidatesPage>
     with SingleTickerProviderStateMixin {
-  // ── UJE Brand Colors ──────────────────────────────────
-  static const Color ujeBlue = Color(0xFF1A5CB8);
-  static const Color ujeGold = Color(0xFFC9A227);
-  static const Color ujeLightBlue = Color(0xFFE8F0FB);
-  static const Color ujeBackground = Color(0xFFF4F6FB);
-  static const Color ujeDark = Color(0xFF1A2340);
+  // ── CRDB Brand Colors ──────────────────────────────────
+  static const Color crdbGreen      = Color(0xFF3AAA35);
+  static const Color crdbDarkGreen  = Color(0xFF1E7A1A);
+  static const Color crdbMidGreen   = Color(0xFF2D9128);
+  static const Color crdbLightGreen = Color(0xFF57C752);
+  static const Color crdbBackground = Color(0xFFF2FAF2);
+  static const Color crdbSurface    = Color(0xFFFFFFFF);
+  static const Color crdbDivider    = Color(0xFFD4EDDA);
+  static const Color crdbTextDark   = Color(0xFF0D2B0C);
 
   List<CandidateModel> candidates = [];
   String responseVoteMessage = "";
@@ -61,8 +64,7 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
       "VoteType": voteType,
       "isShareholderorProxy": "test"
     };
-    final response =
-    await http.post(Uri.parse(voteUrl), body: body);
+    final response = await http.post(Uri.parse(voteUrl), body: body);
     final responseJson = json.decode(response.body);
     if (response.statusCode == 200) {
       if (responseJson[0]["responseCode"] == 0) {
@@ -83,9 +85,9 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ujeBackground,
+      backgroundColor: crdbBackground,
       appBar: AppBar(
-        backgroundColor: ujeBlue,
+        backgroundColor: crdbDarkGreen,
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
@@ -102,7 +104,7 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
             height: 4,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [ujeGold, Color(0xFFFFE082)],
+                colors: [crdbLightGreen, crdbGreen],
               ),
             ),
           ),
@@ -114,15 +116,14 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
         children: [
           // ── Header strip ──────────────────────
           Padding(
-            padding:
-            const EdgeInsets.fromLTRB(16, 20, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
             child: Row(
               children: [
                 Container(
                   width: 4,
                   height: 16,
                   decoration: BoxDecoration(
-                    color: ujeGold,
+                    color: crdbGreen,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -132,7 +133,7 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: ujeGold,
+                    color: crdbGreen,
                     letterSpacing: 1.0,
                   ),
                 ),
@@ -141,14 +142,14 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: ujeBlue.withOpacity(0.08),
+                    color: crdbGreen.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     '${candidates.length} total',
                     style: const TextStyle(
                       fontSize: 11,
-                      color: ujeBlue,
+                      color: crdbGreen,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -162,8 +163,7 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
             child: FadeTransition(
               opacity: _fadeAnim,
               child: ListView.builder(
-                padding:
-                const EdgeInsets.fromLTRB(16, 4, 16, 24),
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                 itemCount: candidates.length,
                 itemBuilder: (context, index) {
                   return _candidateTile(
@@ -194,12 +194,12 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
           Container(
             width: 80,
             height: 80,
-            decoration: BoxDecoration(
-              color: ujeLightBlue,
+            decoration: const BoxDecoration(
+              color: crdbBackground,
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.people_outline,
-                color: ujeBlue, size: 38),
+                color: crdbDarkGreen, size: 38),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -207,7 +207,7 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: ujeDark,
+              color: crdbTextDark,
             ),
           ),
           const SizedBox(height: 6),
@@ -239,25 +239,24 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: hasVoted ? ujeLightBlue : Colors.white,
+        color: hasVoted ? crdbBackground : crdbSurface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: hasVoted
-              ? ujeBlue.withOpacity(0.35)
-              : ujeBlue.withOpacity(0.1),
+              ? crdbGreen.withOpacity(0.35)
+              : crdbDivider,
           width: hasVoted ? 1.5 : 1.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: ujeBlue.withOpacity(hasVoted ? 0.1 : 0.05),
+            color: crdbDarkGreen.withOpacity(hasVoted ? 0.1 : 0.05),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: 14, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Row(
           children: [
             // Index / voted avatar
@@ -266,12 +265,12 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
               height: 40,
               decoration: BoxDecoration(
                 color: hasVoted
-                    ? ujeBlue
+                    ? crdbDarkGreen
                     : Colors.grey.withOpacity(0.1),
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: hasVoted
-                      ? ujeBlue
+                      ? crdbDarkGreen
                       : Colors.grey.withOpacity(0.2),
                 ),
               ),
@@ -301,7 +300,7 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: hasVoted ? ujeBlue : ujeDark,
+                      color: hasVoted ? crdbDarkGreen : crdbTextDark,
                       height: 1.3,
                     ),
                   ),
@@ -348,12 +347,11 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                  hasVoted ? Colors.green[600] : ujeBlue,
+                  hasVoted ? Colors.green[600] : crdbDarkGreen,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8)),
                   elevation: hasVoted ? 0 : 2,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
                 onPressed: () {
                   context.loaderOverlay.show();
@@ -370,12 +368,10 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
               height: 36,
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(
-                      color: Colors.amber[600]!, width: 1.2),
+                  side: BorderSide(color: crdbGreen, width: 1.2),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8)),
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                 ),
                 onPressed: () {
                   context.loaderOverlay.show();
@@ -385,7 +381,7 @@ class _ShowCandidatesPageState extends State<ShowCandidatesPage>
                 child: Text(
                   'Recast',
                   style: TextStyle(
-                    color: Colors.amber[700],
+                    color: crdbMidGreen,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),

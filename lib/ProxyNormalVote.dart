@@ -32,12 +32,15 @@ class ProxyNormalVotePage extends StatefulWidget {
 
 class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
     with SingleTickerProviderStateMixin {
-  // ── UJE Brand Colors ──────────────────────────────────
-  static const Color ujeBlue = Color(0xFF1A5CB8);
-  static const Color ujeGold = Color(0xFFC9A227);
-  static const Color ujeLightBlue = Color(0xFFE8F0FB);
-  static const Color ujeBackground = Color(0xFFF4F6FB);
-  static const Color ujeDark = Color(0xFF1A2340);
+  // ── CRDB Brand Colors ──────────────────────────────────
+  static const Color crdbGreen      = Color(0xFF3AAA35);
+  static const Color crdbDarkGreen  = Color(0xFF1E7A1A);
+  static const Color crdbMidGreen   = Color(0xFF2D9128);
+  static const Color crdbLightGreen = Color(0xFF57C752);
+  static const Color crdbBackground = Color(0xFFF2FAF2);
+  static const Color crdbSurface    = Color(0xFFFFFFFF);
+  static const Color crdbDivider    = Color(0xFFD4EDDA);
+  static const Color crdbTextDark   = Color(0xFF0D2B0C);
 
   String responseVoteMessage = "";
   String cdsString = "";
@@ -74,12 +77,12 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
 
   // ── Helpers ───────────────────────────────────────────
 
-  void _showUjeToast(String msg) {
+  void _showToast(String msg) {
     Fluttertoast.showToast(
       msg: msg,
       toastLength: Toast.LENGTH_LONG,
       gravity: ToastGravity.BOTTOM,
-      backgroundColor: ujeBlue,
+      backgroundColor: crdbDarkGreen,
       textColor: Colors.white,
       fontSize: 14.0,
       timeInSecForIosWeb: 3,
@@ -97,7 +100,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
     if (response.statusCode == 200) {
       final responseJson = json.decode(response.body);
       if (responseJson[0]["responseCode"] == 4) {
-        _showUjeToast(responseJson[0]["responseMessage"]);
+        _showToast(responseJson[0]["responseMessage"]);
         setState(() {
           responseVoteMessage =
               responseJson[0]["responseMessage"].toString();
@@ -129,12 +132,12 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
     );
     final responseJson = json.decode(response.body);
     if (response.statusCode == 200) {
-      _showUjeToast(responseJson[0]["responseMessage"]);
+      _showToast(responseJson[0]["responseMessage"]);
       setState(() {
         voteStatus = responseJson[0]["responseMesssage"].toString();
       });
     } else {
-      _showUjeToast(responseJson[0]["responseMessage"]);
+      _showToast(responseJson[0]["responseMessage"]);
     }
     context.loaderOverlay.hide();
     getShareholderList(widget.proxyNumber, widget.resNumber);
@@ -153,12 +156,12 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
     );
     final responseJson = json.decode(response.body);
     if (response.statusCode == 200) {
-      _showUjeToast(responseJson[0]["responseMessage"]);
+      _showToast(responseJson[0]["responseMessage"]);
       setState(() {
         voteStatus = responseJson[0]["responseMesssage"].toString();
       });
     } else {
-      _showUjeToast(responseJson[0]["responseMessage"]);
+      _showToast(responseJson[0]["responseMessage"]);
     }
     context.loaderOverlay.hide();
     getShareholderList(widget.proxyNumber, widget.resNumber);
@@ -174,9 +177,9 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
     final String resolutionSEQ = widget.resolutionSEQ;
 
     return Scaffold(
-      backgroundColor: ujeBackground,
+      backgroundColor: crdbBackground,
       appBar: AppBar(
-        backgroundColor: ujeBlue,
+        backgroundColor: crdbDarkGreen,
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
@@ -200,7 +203,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
             height: 4,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [ujeGold, Color(0xFFFFE082)],
+                colors: [crdbLightGreen, crdbGreen],
               ),
             ),
           ),
@@ -215,14 +218,14 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [ujeBlue, Color(0xFF0D3A7A)],
+                colors: [crdbDarkGreen, crdbMidGreen],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: ujeBlue.withOpacity(0.25),
+                  color: crdbDarkGreen.withOpacity(0.25),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -251,15 +254,15 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: ujeGold.withOpacity(0.25),
+                              color: crdbGreen.withOpacity(0.25),
                               borderRadius: BorderRadius.circular(6),
                               border: Border.all(
-                                  color: ujeGold.withOpacity(0.5)),
+                                  color: crdbGreen.withOpacity(0.5)),
                             ),
                             child: Text(
                               'Res. $resNumber',
                               style: const TextStyle(
-                                color: Color(0xFFFFE082),
+                                color: Color(0xFFB8F0B5),
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -308,16 +311,16 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
             margin: const EdgeInsets.fromLTRB(16, 14, 16, 0),
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: crdbSurface,
               borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
-                  color: ujeBlue.withOpacity(0.07),
+                  color: crdbDarkGreen.withOpacity(0.07),
                   blurRadius: 8,
                   offset: const Offset(0, 3),
                 ),
               ],
-              border: Border.all(color: ujeBlue.withOpacity(0.1)),
+              border: Border.all(color: crdbDivider),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -328,7 +331,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                       width: 4,
                       height: 14,
                       decoration: BoxDecoration(
-                        color: ujeBlue,
+                        color: crdbDarkGreen,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -338,7 +341,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: ujeBlue,
+                        color: crdbDarkGreen,
                         letterSpacing: 0.8,
                       ),
                     ),
@@ -406,7 +409,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                   width: 4,
                   height: 16,
                   decoration: BoxDecoration(
-                    color: ujeGold,
+                    color: crdbGreen,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -416,7 +419,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: ujeGold,
+                    color: crdbGreen,
                     letterSpacing: 1.0,
                   ),
                 ),
@@ -425,14 +428,14 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: ujeBlue.withOpacity(0.08),
+                    color: crdbGreen.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     '${shareholders.length} total',
                     style: const TextStyle(
                       fontSize: 11,
-                      color: ujeBlue,
+                      color: crdbGreen,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -474,7 +477,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
           Container(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: crdbSurface,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.06),
@@ -499,7 +502,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: ujeBlue,
+                  backgroundColor: crdbDarkGreen,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14)),
                   elevation: 3,
@@ -528,11 +531,11 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
             width: 70,
             height: 70,
             decoration: const BoxDecoration(
-              color: ujeLightBlue,
+              color: crdbBackground,
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.people_outline,
-                color: ujeBlue, size: 34),
+                color: crdbDarkGreen, size: 34),
           ),
           const SizedBox(height: 14),
           const Text(
@@ -540,7 +543,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: ujeDark,
+              color: crdbTextDark,
             ),
           ),
           const SizedBox(height: 6),
@@ -641,17 +644,17 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
       decoration: BoxDecoration(
         color: hasVoted
             ? votedColor!.withOpacity(0.06)
-            : Colors.white,
+            : crdbSurface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: hasVoted
               ? votedColor!.withOpacity(0.3)
-              : ujeBlue.withOpacity(0.1),
+              : crdbDivider,
           width: hasVoted ? 1.5 : 1.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: ujeBlue.withOpacity(0.05),
+            color: crdbDarkGreen.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -672,15 +675,14 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                   decoration: BoxDecoration(
                     color: hasVoted
                         ? votedColor!.withOpacity(0.15)
-                        : ujeLightBlue,
+                        : crdbBackground,
                     shape: BoxShape.circle,
                   ),
                   child: Center(
                     child: Text(
                       '${index + 1}',
                       style: TextStyle(
-                        color:
-                        hasVoted ? votedColor : ujeBlue,
+                        color: hasVoted ? votedColor : crdbDarkGreen,
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
                       ),
@@ -691,15 +693,14 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                 // Name & shares
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         names,
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
-                          color: ujeDark,
+                          color: crdbTextDark,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),

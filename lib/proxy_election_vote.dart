@@ -30,14 +30,15 @@ class ProxyElectionVotePage extends StatefulWidget {
 
 class _ProxyElectionVotePageState extends State<ProxyElectionVotePage>
     with SingleTickerProviderStateMixin {
-  // ── UJE Brand Palette ────────────────────────────────────
-  static const Color ujeBlue       = Color(0xFF0D2E6E);
-  static const Color ujeMidBlue    = Color(0xFF1A4FA0);
-  static const Color ujeGold       = Color(0xFFB8891A);
-  static const Color ujeGoldLight  = Color(0xFFE6AA30);
-  static const Color ujeBackground = Color(0xFFF0F3FA);
-  static const Color ujeSurface    = Color(0xFFFFFFFF);
-  static const Color ujeDivider    = Color(0xFFDDE4F0);
+  // ── CRDB Brand Colors ──────────────────────────────────
+  static const Color crdbGreen      = Color(0xFF3AAA35);
+  static const Color crdbDarkGreen  = Color(0xFF1E7A1A);
+  static const Color crdbMidGreen   = Color(0xFF2D9128);
+  static const Color crdbLightGreen = Color(0xFF57C752);
+  static const Color crdbBackground = Color(0xFFF2FAF2);
+  static const Color crdbSurface    = Color(0xFFFFFFFF);
+  static const Color crdbDivider    = Color(0xFFD4EDDA);
+  static const Color crdbTextDark   = Color(0xFF0D2B0C);
 
   TextEditingController voterController = TextEditingController();
   String responseVoteMessage = "";
@@ -130,9 +131,9 @@ class _ProxyElectionVotePageState extends State<ProxyElectionVotePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ujeBackground,
+      backgroundColor: crdbBackground,
       appBar: AppBar(
-        backgroundColor: ujeBlue,
+        backgroundColor: crdbDarkGreen,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded,
@@ -155,9 +156,9 @@ class _ProxyElectionVotePageState extends State<ProxyElectionVotePage>
               ),
             ),
             Text(
-              'Ushirika Joint Enterprises',
+              'CRDB Bank Plc',
               style: TextStyle(
-                color: Color(0xFFD4AF5A),
+                color: Color(0xFFB8F0B5),
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
                 letterSpacing: 0.4,
@@ -171,7 +172,11 @@ class _ProxyElectionVotePageState extends State<ProxyElectionVotePage>
             height: 3,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.transparent, Color(0xFFE6AA30), Colors.transparent],
+                colors: [
+                  Colors.transparent,
+                  crdbLightGreen,
+                  Colors.transparent,
+                ],
               ),
             ),
           ),
@@ -186,12 +191,13 @@ class _ProxyElectionVotePageState extends State<ProxyElectionVotePage>
               margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF8E7),
+                color: crdbBackground,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: ujeGoldLight.withOpacity(0.5), width: 1.2),
+                border: Border.all(
+                    color: crdbGreen.withOpacity(0.5), width: 1.2),
                 boxShadow: [
                   BoxShadow(
-                    color: ujeGold.withOpacity(0.08),
+                    color: crdbDarkGreen.withOpacity(0.08),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -204,18 +210,18 @@ class _ProxyElectionVotePageState extends State<ProxyElectionVotePage>
                     margin: const EdgeInsets.only(top: 2),
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: ujeGoldLight.withOpacity(0.2),
+                      color: crdbGreen.withOpacity(0.15),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.info_outline_rounded,
-                        color: ujeGold, size: 16),
+                        color: crdbDarkGreen, size: 16),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       widget.voteDetails,
                       style: const TextStyle(
-                        color: Color(0xFF7A5A00),
+                        color: crdbTextDark,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         height: 1.4,
@@ -231,14 +237,15 @@ class _ProxyElectionVotePageState extends State<ProxyElectionVotePage>
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
             child: Row(
               children: [
-                const Icon(Icons.people_alt_rounded, size: 15, color: ujeBlue),
+                const Icon(Icons.people_alt_rounded,
+                    size: 15, color: crdbDarkGreen),
                 const SizedBox(width: 8),
                 const Text(
                   'CANDIDATES',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
-                    color: ujeBlue,
+                    color: crdbDarkGreen,
                     letterSpacing: 1.8,
                   ),
                 ),
@@ -246,18 +253,22 @@ class _ProxyElectionVotePageState extends State<ProxyElectionVotePage>
                 Expanded(
                   child: Container(
                     height: 1,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Color(0x661A4FA0), Colors.transparent],
+                        colors: [
+                          crdbDarkGreen.withOpacity(0.4),
+                          Colors.transparent,
+                        ],
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: ujeBlue.withOpacity(0.08),
+                    color: crdbDarkGreen.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -265,7 +276,7 @@ class _ProxyElectionVotePageState extends State<ProxyElectionVotePage>
                     style: const TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
-                      color: ujeBlue,
+                      color: crdbDarkGreen,
                     ),
                   ),
                 ),
@@ -300,13 +311,15 @@ class _ProxyElectionVotePageState extends State<ProxyElectionVotePage>
                 child: ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
                   itemCount: candidates.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  separatorBuilder: (_, __) =>
+                  const SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     return _CandidateCard(
                       nominee: candidates[index].nomineeName ?? '',
                       orderNumber: candidates[index].orderNumber ?? '',
                       resolutionNumber: candidates[index].resNo ?? '',
-                      existingVote: candidates[index].resExistingVote ?? '',
+                      existingVote:
+                      candidates[index].resExistingVote ?? '',
                       cdsString: widget.cdsString,
                       index: index,
                       onVote: (orderNumber, resolutionNumber, voteType) {
@@ -329,10 +342,10 @@ class _ProxyElectionVotePageState extends State<ProxyElectionVotePage>
           Container(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
             decoration: BoxDecoration(
-              color: ujeSurface,
+              color: crdbSurface,
               boxShadow: [
                 BoxShadow(
-                  color: ujeBlue.withOpacity(0.08),
+                  color: crdbDarkGreen.withOpacity(0.08),
                   blurRadius: 16,
                   offset: const Offset(0, -4),
                 ),
@@ -343,7 +356,7 @@ class _ProxyElectionVotePageState extends State<ProxyElectionVotePage>
               height: 52,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: ujeBlue,
+                  backgroundColor: crdbDarkGreen,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -388,7 +401,8 @@ class _CandidateCard extends StatefulWidget {
   final String existingVote;
   final String cdsString;
   final int index;
-  final void Function(String orderNumber, String resolutionNumber, String voteType) onVote;
+  final void Function(String orderNumber, String resolutionNumber,
+      String voteType) onVote;
 
   const _CandidateCard({
     required this.nominee,
@@ -405,9 +419,11 @@ class _CandidateCard extends StatefulWidget {
 }
 
 class _CandidateCardState extends State<_CandidateCard> {
-  static const Color ujeBlue    = Color(0xFF0D2E6E);
-  static const Color ujeGold    = Color(0xFFB8891A);
-  static const Color ujeSurface = Color(0xFFFFFFFF);
+  static const Color crdbDarkGreen  = Color(0xFF1E7A1A);
+  static const Color crdbMidGreen   = Color(0xFF2D9128);
+  static const Color crdbGreen      = Color(0xFF3AAA35);
+  static const Color crdbSurface    = Color(0xFFFFFFFF);
+  static const Color crdbDivider    = Color(0xFFD4EDDA);
 
   bool get hasVotedYes => widget.existingVote == "1";
 
@@ -415,17 +431,17 @@ class _CandidateCardState extends State<_CandidateCard> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: ujeSurface,
+        color: crdbSurface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: hasVotedYes
               ? const Color(0xFF1B7B3A).withOpacity(0.35)
-              : const Color(0xFFDDE4F0),
+              : crdbDivider,
           width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: ujeBlue.withOpacity(0.06),
+            color: crdbDarkGreen.withOpacity(0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -439,11 +455,11 @@ class _CandidateCardState extends State<_CandidateCard> {
             Container(
               width: 44,
               height: 44,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xFF1A4FA0), Color(0xFF0D2E6E)],
+                  colors: [crdbMidGreen, crdbDarkGreen],
                 ),
                 shape: BoxShape.circle,
               ),
@@ -472,7 +488,7 @@ class _CandidateCardState extends State<_CandidateCard> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF0D1B3E),
+                      color: Color(0xFF0D2B0C),
                       height: 1.2,
                     ),
                   ),
@@ -517,9 +533,9 @@ class _CandidateCardState extends State<_CandidateCard> {
                 _VoteButton(
                   label: 'Recast',
                   isSelected: false,
-                  selectedColor: ujeGold,
-                  defaultColor: const Color(0xFFFFF8E7),
-                  defaultTextColor: ujeGold,
+                  selectedColor: crdbGreen,
+                  defaultColor: const Color(0xFFEAF7EA),
+                  defaultTextColor: crdbDarkGreen,
                   onTap: () => widget.onVote(
                       widget.orderNumber, widget.resolutionNumber, "3"),
                 ),

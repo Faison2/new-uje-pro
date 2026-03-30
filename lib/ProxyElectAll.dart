@@ -33,12 +33,15 @@ class ProxyElectionAllVotePage extends StatefulWidget {
 class _ProxyElectionAllVotePageState
     extends State<ProxyElectionAllVotePage>
     with SingleTickerProviderStateMixin {
-  // ── UJE Brand Colors ──────────────────────────────────
-  static const Color ujeBlue = Color(0xFF1A5CB8);
-  static const Color ujeGold = Color(0xFFC9A227);
-  static const Color ujeLightBlue = Color(0xFFE8F0FB);
-  static const Color ujeBackground = Color(0xFFF4F6FB);
-  static const Color ujeDark = Color(0xFF1A2340);
+  // ── CRDB Brand Colors ──────────────────────────────────
+  static const Color crdbGreen      = Color(0xFF3AAA35);
+  static const Color crdbDarkGreen  = Color(0xFF1E7A1A);
+  static const Color crdbMidGreen   = Color(0xFF2D9128);
+  static const Color crdbLightGreen = Color(0xFF57C752);
+  static const Color crdbBackground = Color(0xFFF2FAF2);
+  static const Color crdbSurface    = Color(0xFFFFFFFF);
+  static const Color crdbDivider    = Color(0xFFD4EDDA);
+  static const Color crdbTextDark   = Color(0xFF0D2B0C);
 
   String responseVoteMessage = "";
   List<CandidateModel> candidates = [];
@@ -71,12 +74,12 @@ class _ProxyElectionAllVotePageState
 
   // ── Helpers ───────────────────────────────────────────
 
-  void _showUjeToast(String msg) {
+  void _showToast(String msg) {
     Fluttertoast.showToast(
       msg: msg,
       toastLength: Toast.LENGTH_LONG,
       gravity: ToastGravity.BOTTOM,
-      backgroundColor: ujeBlue,
+      backgroundColor: crdbDarkGreen,
       textColor: Colors.white,
       fontSize: 14.0,
       timeInSecForIosWeb: 3,
@@ -120,15 +123,14 @@ class _ProxyElectionAllVotePageState
     final responseJson = json.decode(response.body);
     if (response.statusCode == 200) {
       if (responseJson[0]["responseCode"] == 0) {
-        _showUjeToast(responseJson[0]["responseMessage"]);
+        _showToast(responseJson[0]["responseMessage"]);
         setState(() {
           responseVoteMessage =
               responseJson[0]["responseMessage"].toString();
         });
       }
     } else {
-      _showUjeToast(
-          "Vote Failed: ${responseJson[0]["responseMessage"]}");
+      _showToast("Vote Failed: ${responseJson[0]["responseMessage"]}");
     }
     context.loaderOverlay.hide();
     getAllCandidateList(widget.resNumber);
@@ -139,9 +141,9 @@ class _ProxyElectionAllVotePageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ujeBackground,
+      backgroundColor: crdbBackground,
       appBar: AppBar(
-        backgroundColor: ujeBlue,
+        backgroundColor: crdbDarkGreen,
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
@@ -165,7 +167,7 @@ class _ProxyElectionAllVotePageState
             height: 4,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [ujeGold, Color(0xFFFFE082)],
+                colors: [crdbLightGreen, crdbGreen],
               ),
             ),
           ),
@@ -180,14 +182,14 @@ class _ProxyElectionAllVotePageState
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [ujeBlue, Color(0xFF0D3A7A)],
+                colors: [crdbDarkGreen, crdbMidGreen],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: ujeBlue.withOpacity(0.25),
+                  color: crdbDarkGreen.withOpacity(0.25),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -216,15 +218,15 @@ class _ProxyElectionAllVotePageState
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: ujeGold.withOpacity(0.25),
+                              color: crdbGreen.withOpacity(0.25),
                               borderRadius: BorderRadius.circular(6),
                               border: Border.all(
-                                  color: ujeGold.withOpacity(0.5)),
+                                  color: crdbGreen.withOpacity(0.5)),
                             ),
                             child: Text(
                               'Res. ${widget.resNumber}',
                               style: const TextStyle(
-                                color: Color(0xFFFFE082),
+                                color: Color(0xFFB8F0B5),
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -277,7 +279,7 @@ class _ProxyElectionAllVotePageState
                   width: 4,
                   height: 16,
                   decoration: BoxDecoration(
-                    color: ujeGold,
+                    color: crdbGreen,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -287,7 +289,7 @@ class _ProxyElectionAllVotePageState
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: ujeGold,
+                    color: crdbGreen,
                     letterSpacing: 1.0,
                   ),
                 ),
@@ -320,11 +322,11 @@ class _ProxyElectionAllVotePageState
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: ujeBlue.withOpacity(0.08),
+                      color: crdbGreen.withOpacity(0.08),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(Icons.refresh,
-                        color: ujeBlue, size: 16),
+                        color: crdbDarkGreen, size: 16),
                   ),
                 ),
               ],
@@ -338,8 +340,7 @@ class _ProxyElectionAllVotePageState
                 : FadeTransition(
               opacity: _fadeAnim,
               child: ListView.builder(
-                padding:
-                const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 itemCount: candidates.length,
                 itemBuilder: (context, index) {
                   return _candidateTile(
@@ -360,7 +361,7 @@ class _ProxyElectionAllVotePageState
           Container(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: crdbSurface,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.06),
@@ -385,7 +386,7 @@ class _ProxyElectionAllVotePageState
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: ujeBlue,
+                  backgroundColor: crdbDarkGreen,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14)),
                   elevation: 3,
@@ -414,11 +415,11 @@ class _ProxyElectionAllVotePageState
             width: 70,
             height: 70,
             decoration: const BoxDecoration(
-              color: ujeLightBlue,
+              color: crdbBackground,
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.people_outline,
-                color: ujeBlue, size: 34),
+                color: crdbDarkGreen, size: 34),
           ),
           const SizedBox(height: 14),
           const Text(
@@ -426,7 +427,7 @@ class _ProxyElectionAllVotePageState
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: ujeDark,
+              color: crdbTextDark,
             ),
           ),
           const SizedBox(height: 6),
@@ -441,7 +442,7 @@ class _ProxyElectionAllVotePageState
             label: const Text('Retry',
                 style: TextStyle(color: Colors.white)),
             style: ElevatedButton.styleFrom(
-              backgroundColor: ujeBlue,
+              backgroundColor: crdbDarkGreen,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
             ),
@@ -471,25 +472,24 @@ class _ProxyElectionAllVotePageState
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: hasVoted ? ujeLightBlue : Colors.white,
+        color: hasVoted ? crdbBackground : crdbSurface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: hasVoted
-              ? ujeBlue.withOpacity(0.35)
-              : ujeBlue.withOpacity(0.1),
+              ? crdbGreen.withOpacity(0.35)
+              : crdbDivider,
           width: hasVoted ? 1.5 : 1.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: ujeBlue.withOpacity(hasVoted ? 0.1 : 0.05),
+            color: crdbDarkGreen.withOpacity(hasVoted ? 0.1 : 0.05),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: 14, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Row(
           children: [
             // Index / voted avatar
@@ -498,12 +498,12 @@ class _ProxyElectionAllVotePageState
               height: 40,
               decoration: BoxDecoration(
                 color: hasVoted
-                    ? ujeBlue
+                    ? crdbDarkGreen
                     : Colors.grey.withOpacity(0.1),
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: hasVoted
-                      ? ujeBlue
+                      ? crdbDarkGreen
                       : Colors.grey.withOpacity(0.2),
                 ),
               ),
@@ -533,7 +533,7 @@ class _ProxyElectionAllVotePageState
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: hasVoted ? ujeBlue : ujeDark,
+                      color: hasVoted ? crdbDarkGreen : crdbTextDark,
                       height: 1.3,
                     ),
                   ),
@@ -580,12 +580,11 @@ class _ProxyElectionAllVotePageState
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                  hasVoted ? Colors.green[600] : ujeBlue,
+                  hasVoted ? Colors.green[600] : crdbDarkGreen,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8)),
                   elevation: hasVoted ? 0 : 2,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
                 onPressed: () {
                   context.loaderOverlay.show();
@@ -607,12 +606,10 @@ class _ProxyElectionAllVotePageState
               height: 36,
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(
-                      color: Colors.amber[600]!, width: 1.2),
+                  side: BorderSide(color: crdbGreen, width: 1.2),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8)),
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                 ),
                 onPressed: () {
                   context.loaderOverlay.show();
@@ -627,7 +624,7 @@ class _ProxyElectionAllVotePageState
                 child: Text(
                   'Recast',
                   style: TextStyle(
-                    color: Colors.amber[700],
+                    color: crdbMidGreen,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),

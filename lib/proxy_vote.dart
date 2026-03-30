@@ -23,12 +23,15 @@ class ProxyVotePage extends StatefulWidget {
 
 class _ProxyVotePageState extends State<ProxyVotePage>
     with SingleTickerProviderStateMixin {
-  // ── UJE Brand Colors ──────────────────────────────────
-  static const Color ujeBlue = Color(0xFF1A5CB8);
-  static const Color ujeGold = Color(0xFFC9A227);
-  static const Color ujeLightBlue = Color(0xFFE8F0FB);
-  static const Color ujeBackground = Color(0xFFF4F6FB);
-  static const Color ujeDark = Color(0xFF1A2340);
+  // ── CRDB Brand Colors ──────────────────────────────────
+  static const Color crdbGreen      = Color(0xFF3AAA35);
+  static const Color crdbDarkGreen  = Color(0xFF1E7A1A);
+  static const Color crdbMidGreen   = Color(0xFF2D9128);
+  static const Color crdbLightGreen = Color(0xFF57C752);
+  static const Color crdbBackground = Color(0xFFF2FAF2);
+  static const Color crdbSurface    = Color(0xFFFFFFFF);
+  static const Color crdbDivider    = Color(0xFFD4EDDA);
+  static const Color crdbTextDark   = Color(0xFF0D2B0C);
 
   TextEditingController voterController = TextEditingController();
   String respRef = "";
@@ -103,10 +106,10 @@ class _ProxyVotePageState extends State<ProxyVotePage>
     if (response.statusCode == 200) {
       final responseJson = json.decode(response.body);
       if (responseJson[0]["responseCode"] == 4) {
-        _showUjeToast(responseJson[0]["responseMessage"]);
+        _showToast(responseJson[0]["responseMessage"]);
         return responseJson[0]["responseMessage"].toString();
       } else if (responseJson[0]["responseCode"] == 2) {
-        _showUjeToast(responseJson[0]["responseMessage"]);
+        _showToast(responseJson[0]["responseMessage"]);
         return responseJson[0]["responseMessage"].toString();
       } else if (responseJson[0]["responseCode"] == 6) {
         proxyVoterModel = ProxyVoterModel.fromJson(responseJson[0]);
@@ -124,7 +127,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
         context.loaderOverlay.hide();
       }
     } else {
-      _showUjeToast("Failed to retrieve data");
+      _showToast("Failed to retrieve data");
       context.loaderOverlay.hide();
     }
     context.loaderOverlay.hide();
@@ -154,11 +157,11 @@ class _ProxyVotePageState extends State<ProxyVotePage>
           _animController.forward(from: 0);
           context.loaderOverlay.hide();
         } else {
-          _showUjeToast("No resolutions at the moment");
+          _showToast("No resolutions at the moment");
           context.loaderOverlay.hide();
         }
       } else {
-        _showUjeToast(responseJson[0]["responseMessage"]);
+        _showToast(responseJson[0]["responseMessage"]);
         setState(() {
           responseVoteMessage =
               responseJson[0]["responseMessage"].toString();
@@ -178,7 +181,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
     if (response.statusCode == 200) {
       final responseJson = json.decode(response.body);
       if (responseJson[0]["responseCode"] == 4) {
-        _showUjeToast(responseJson[0]["responseMessage"]);
+        _showToast(responseJson[0]["responseMessage"]);
         setState(() {
           responseVoteMessage =
               responseJson[0]["responseMessage"].toString();
@@ -206,7 +209,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
     if (response.statusCode == 200) {
       final responseJson = json.decode(response.body);
       if (responseJson[0]["responseCode"] == 4) {
-        _showUjeToast(responseJson[0]["responseMessage"]);
+        _showToast(responseJson[0]["responseMessage"]);
         context.loaderOverlay.hide();
       }
       int len = responseJson.length;
@@ -229,7 +232,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
     if (response.statusCode == 200) {
       final responseJson = json.decode(response.body);
       if (responseJson[0]["responseCode"] == 4) {
-        _showUjeToast(responseJson[0]["responseMessage"]);
+        _showToast(responseJson[0]["responseMessage"]);
         setState(() {
           responseVoteMessage =
               responseJson[0]["responseMessage"].toString();
@@ -260,12 +263,12 @@ class _ProxyVotePageState extends State<ProxyVotePage>
     );
     final responseJson = json.decode(response.body);
     if (response.statusCode == 200) {
-      _showUjeToast(responseJson[0]["responseMessage"]);
+      _showToast(responseJson[0]["responseMessage"]);
       setState(() {
         voteStatus = responseJson[0]["responseMesssage"].toString();
       });
     } else {
-      _showUjeToast(responseJson[0]["responseMessage"]);
+      _showToast(responseJson[0]["responseMessage"]);
     }
     context.loaderOverlay.hide();
   }
@@ -286,10 +289,10 @@ class _ProxyVotePageState extends State<ProxyVotePage>
     final responseJson = json.decode(response.body);
     if (response.statusCode == 200) {
       if (responseJson[0]["responseCode"] == 0) {
-        _showUjeToast(responseJson[0]["responseMessage"]);
+        _showToast(responseJson[0]["responseMessage"]);
       }
     } else {
-      _showUjeToast(responseJson[0]["responseMessage"]);
+      _showToast(responseJson[0]["responseMessage"]);
     }
     context.loaderOverlay.hide();
   }
@@ -307,12 +310,12 @@ class _ProxyVotePageState extends State<ProxyVotePage>
     );
     final responseJson = json.decode(response.body);
     if (response.statusCode == 200) {
-      _showUjeToast(responseJson[0]["responseMessage"]);
+      _showToast(responseJson[0]["responseMessage"]);
       setState(() {
         voteStatus = responseJson[0]["responseMesssage"].toString();
       });
     } else {
-      _showUjeToast(responseJson[0]["responseMessage"]);
+      _showToast(responseJson[0]["responseMessage"]);
     }
     context.loaderOverlay.hide();
   }
@@ -331,24 +334,24 @@ class _ProxyVotePageState extends State<ProxyVotePage>
     );
     final responseJson = json.decode(response.body);
     if (response.statusCode == 200) {
-      _showUjeToast(responseJson[0]["responseMessage"]);
+      _showToast(responseJson[0]["responseMessage"]);
       setState(() {
         voteStatus = responseJson[0]["responseMesssage"].toString();
       });
     } else {
-      _showUjeToast(responseJson[0]["responseMessage"]);
+      _showToast(responseJson[0]["responseMessage"]);
     }
     context.loaderOverlay.hide();
   }
 
   // ── Helper ────────────────────────────────────────────
 
-  void _showUjeToast(String msg) {
+  void _showToast(String msg) {
     Fluttertoast.showToast(
       msg: msg,
       toastLength: Toast.LENGTH_LONG,
       gravity: ToastGravity.BOTTOM,
-      backgroundColor: ujeBlue,
+      backgroundColor: crdbDarkGreen,
       textColor: Colors.white,
       fontSize: 14.0,
       timeInSecForIosWeb: 3,
@@ -375,9 +378,9 @@ class _ProxyVotePageState extends State<ProxyVotePage>
   Widget build(BuildContext context) {
     voteCode = respRef;
     return Scaffold(
-      backgroundColor: ujeBackground,
+      backgroundColor: crdbBackground,
       appBar: AppBar(
-        backgroundColor: ujeBlue,
+        backgroundColor: crdbDarkGreen,
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
@@ -394,7 +397,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
             height: 4,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [ujeGold, Color(0xFFFFE082)],
+                colors: [crdbLightGreen, crdbGreen],
               ),
             ),
           ),
@@ -408,11 +411,11 @@ class _ProxyVotePageState extends State<ProxyVotePage>
             // ── Search Card ───────────────────────────
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: crdbSurface,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: ujeBlue.withOpacity(0.08),
+                    color: crdbDarkGreen.withOpacity(0.08),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -426,12 +429,12 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                      color: ujeBlue.withOpacity(0.06),
+                      color: crdbDarkGreen.withOpacity(0.06),
                       borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(16)),
                       border: Border(
                           bottom: BorderSide(
-                              color: ujeBlue.withOpacity(0.1),
+                              color: crdbDarkGreen.withOpacity(0.1),
                               width: 1)),
                     ),
                     child: Row(
@@ -440,7 +443,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                           width: 4,
                           height: 16,
                           decoration: BoxDecoration(
-                            color: ujeBlue,
+                            color: crdbDarkGreen,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -450,7 +453,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: ujeBlue,
+                            color: crdbDarkGreen,
                             letterSpacing: 1.0,
                           ),
                         ),
@@ -465,39 +468,35 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                         TextFormField(
                           controller: voterController,
                           style: const TextStyle(
-                              fontSize: 14, color: ujeDark),
+                              fontSize: 14, color: crdbTextDark),
                           decoration: InputDecoration(
                             labelText: 'Proxy CDS Number',
                             hintText: 'Enter your proxy CDS No.',
                             labelStyle: TextStyle(
-                                color: ujeBlue.withOpacity(0.7),
+                                color: crdbDarkGreen.withOpacity(0.7),
                                 fontSize: 13),
                             prefixIcon: const Icon(
                                 Icons.badge_outlined,
-                                color: ujeBlue,
+                                color: crdbDarkGreen,
                                 size: 20),
                             filled: true,
-                            fillColor: const Color(0xFFF8FAFF),
-                            contentPadding:
-                            const EdgeInsets.symmetric(
+                            fillColor: crdbBackground,
+                            contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 14, vertical: 14),
                             border: OutlineInputBorder(
-                              borderRadius:
-                              BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(
-                                  color: ujeBlue.withOpacity(0.2)),
+                                  color: crdbDarkGreen.withOpacity(0.2)),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                              BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(
-                                  color: ujeBlue.withOpacity(0.25)),
+                                  color: crdbDarkGreen.withOpacity(0.25)),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                              BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(10),
                               borderSide: const BorderSide(
-                                  color: ujeBlue, width: 1.5),
+                                  color: crdbDarkGreen, width: 1.5),
                             ),
                           ),
                         ),
@@ -510,30 +509,25 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                                 height: 46,
                                 child: ElevatedButton.icon(
                                   icon: const Icon(Icons.search,
-                                      color: Colors.white,
-                                      size: 18),
+                                      color: Colors.white, size: 18),
                                   label: const Text('Search',
                                       style: TextStyle(
                                           color: Colors.white,
-                                          fontWeight:
-                                          FontWeight.bold,
+                                          fontWeight: FontWeight.bold,
                                           fontSize: 15)),
-                                  style:
-                                  ElevatedButton.styleFrom(
-                                    backgroundColor: ujeBlue,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: crdbDarkGreen,
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
-                                        BorderRadius.circular(
-                                            10)),
+                                        BorderRadius.circular(10)),
                                     elevation: 2,
                                   ),
                                   onPressed: () {
                                     context.loaderOverlay.show();
                                     Future.delayed(
-                                        const Duration(seconds: 5),
-                                            () {
-                                          getResolutions(respRef);
-                                        });
+                                        const Duration(seconds: 5), () {
+                                      getResolutions(respRef);
+                                    });
                                   },
                                 ),
                               ),
@@ -550,18 +544,15 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                                   label: const Text('Clear',
                                       style: TextStyle(
                                           color: Colors.redAccent,
-                                          fontWeight:
-                                          FontWeight.bold,
+                                          fontWeight: FontWeight.bold,
                                           fontSize: 15)),
-                                  style:
-                                  OutlinedButton.styleFrom(
+                                  style: OutlinedButton.styleFrom(
                                     side: const BorderSide(
                                         color: Colors.redAccent,
                                         width: 1.2),
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
-                                        BorderRadius.circular(
-                                            10)),
+                                        BorderRadius.circular(10)),
                                   ),
                                   onPressed: _clearAll,
                                 ),
@@ -583,18 +574,15 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                 padding: const EdgeInsets.symmetric(
                     horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      ujeBlue.withOpacity(0.9),
-                      const Color(0xFF0D3A7A)
-                    ],
+                  gradient: const LinearGradient(
+                    colors: [crdbDarkGreen, crdbMidGreen],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(14),
                   boxShadow: [
                     BoxShadow(
-                      color: ujeBlue.withOpacity(0.25),
+                      color: crdbDarkGreen.withOpacity(0.25),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -615,8 +603,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
-                        crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
                             'PROXY NAME',
@@ -644,20 +631,20 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: ujeGold.withOpacity(0.25),
+                        color: crdbGreen.withOpacity(0.25),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                            color: ujeGold.withOpacity(0.5)),
+                            color: crdbGreen.withOpacity(0.5)),
                       ),
                       child: Row(
                         children: [
                           const Icon(Icons.how_to_vote,
-                              color: Color(0xFFFFE082), size: 14),
+                              color: Color(0xFFB8F0B5), size: 14),
                           const SizedBox(width: 4),
                           Text(
                             '${proxyVoterModel.resItem?.length ?? 0} Resolutions',
                             style: const TextStyle(
-                              color: Color(0xFFFFE082),
+                              color: Color(0xFFB8F0B5),
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
                             ),
@@ -679,7 +666,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                     width: 4,
                     height: 16,
                     decoration: BoxDecoration(
-                      color: ujeGold,
+                      color: crdbGreen,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -689,7 +676,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: ujeGold,
+                      color: crdbGreen,
                       letterSpacing: 1.0,
                     ),
                   ),
@@ -742,19 +729,16 @@ class _ProxyVotePageState extends State<ProxyVotePage>
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: crdbSurface,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: ujeBlue.withOpacity(0.07),
+            color: crdbDarkGreen.withOpacity(0.07),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(
-          color: ujeBlue.withOpacity(0.1),
-          width: 1,
-        ),
+        border: Border.all(color: crdbDivider),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -769,7 +753,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                   width: 30,
                   height: 30,
                   decoration: const BoxDecoration(
-                    color: ujeBlue,
+                    color: crdbDarkGreen,
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -784,12 +768,12 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                   ),
                 ),
                 const SizedBox(width: 10),
-                // Resolution number
+                // Resolution number chip
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: ujeLightBlue,
+                    color: crdbBackground,
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -797,7 +781,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                     style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: ujeBlue,
+                      color: crdbDarkGreen,
                     ),
                   ),
                 ),
@@ -808,7 +792,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                       horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: isElection
-                        ? ujeGold.withOpacity(0.15)
+                        ? crdbGreen.withOpacity(0.12)
                         : Colors.green.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
@@ -817,8 +801,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color:
-                      isElection ? ujeGold : Colors.green[700],
+                      color: isElection ? crdbMidGreen : Colors.green[700],
                     ),
                   ),
                 ),
@@ -830,7 +813,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
               voteDetails,
               style: const TextStyle(
                 fontSize: 14,
-                color: ujeDark,
+                color: crdbTextDark,
                 height: 1.4,
                 fontWeight: FontWeight.w500,
               ),
@@ -853,7 +836,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: ujeBlue,
+                  backgroundColor: crdbDarkGreen,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                   elevation: 2,
