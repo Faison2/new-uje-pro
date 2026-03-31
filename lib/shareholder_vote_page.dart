@@ -786,7 +786,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
         const SizedBox(width: 8),
         Expanded(
           child: _voteButton(
-            label: 'ABSTAIN',
+            label: 'YES',
             icon: Icons.remove_circle_outline,
             activeColor: Colors.amber[700]!,
             inactiveColor: Colors.amber.withOpacity(0.08),
@@ -802,7 +802,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
         const SizedBox(width: 8),
         Expanded(
           child: _voteButton(
-            label: 'AGAINST',
+            label: 'NO',
             icon: Icons.thumb_down_outlined,
             activeColor: Colors.red[600]!,
             inactiveColor: Colors.red.withOpacity(0.07),

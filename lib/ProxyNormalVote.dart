@@ -367,7 +367,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                     const SizedBox(width: 8),
                     Expanded(
                       child: _bulkVoteButton(
-                        label: 'ABSTAIN ALL',
+                        label: 'YES ALL',
                         icon: Icons.remove_circle_outline,
                         activeColor: Colors.amber[700]!,
                         bgColor: Colors.amber.withOpacity(0.08),
@@ -382,7 +382,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                     const SizedBox(width: 8),
                     Expanded(
                       child: _bulkVoteButton(
-                        label: 'AGAINST ALL',
+                        label: 'NO ALL',
                         icon: Icons.thumb_down_outlined,
                         activeColor: Colors.red[600]!,
                         bgColor: Colors.red.withOpacity(0.07),
@@ -774,7 +774,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                 const SizedBox(width: 6),
                 Expanded(
                   child: _voteButton(
-                    label: 'ABSTAIN',
+                    label: 'YES',
                     icon: Icons.remove_circle_outline,
                     activeColor: Colors.amber[700]!,
                     bgColor: Colors.amber.withOpacity(0.07),
@@ -789,7 +789,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                 const SizedBox(width: 6),
                 Expanded(
                   child: _voteButton(
-                    label: 'AGAINST',
+                    label: 'NO',
                     icon: Icons.thumb_down_outlined,
                     activeColor: Colors.red[600]!,
                     bgColor: Colors.red.withOpacity(0.07),
