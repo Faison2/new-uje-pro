@@ -352,21 +352,6 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                   children: [
                     Expanded(
                       child: _bulkVoteButton(
-                        label: 'FOR ALL',
-                        icon: Icons.thumb_up_outlined,
-                        activeColor: Colors.green[700]!,
-                        bgColor: Colors.green.withOpacity(0.08),
-                        isActive: vote == "1",
-                        onTap: () {
-                          handleNormalVoteAll(
-                              resolutionSEQ, proxyNumber, "1");
-                          setState(() => shareholders.clear());
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _bulkVoteButton(
                         label: 'YES ALL',
                         icon: Icons.remove_circle_outline,
                         activeColor: Colors.amber[700]!,
@@ -624,10 +609,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
     // Determine voted state color
     Color? votedColor;
     String votedLabel = '';
-    if (existingVote == "1") {
-      votedColor = Colors.green[600];
-      votedLabel = 'For';
-    } else if (existingVote == "2") {
+    if (existingVote == "2") {
       votedColor = Colors.red[600];
       votedLabel = 'Against';
     } else if (existingVote == "3") {
@@ -635,9 +617,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
       votedLabel = 'Abstain';
     }
 
-    final bool hasVoted = existingVote == "1" ||
-        existingVote == "2" ||
-        existingVote == "3";
+    final bool hasVoted = existingVote == "2" || existingVote == "3";
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -757,21 +737,6 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
             // Vote buttons row
             Row(
               children: [
-                Expanded(
-                  child: _voteButton(
-                    label: 'FOR',
-                    icon: Icons.thumb_up_outlined,
-                    activeColor: Colors.green[700]!,
-                    bgColor: Colors.green.withOpacity(0.07),
-                    isActive: existingVote == "1",
-                    onTap: () {
-                      context.loaderOverlay.show();
-                      handleNormalVote(shareholder, resNo, "1");
-                      setState(() => shareholders.clear());
-                    },
-                  ),
-                ),
-                const SizedBox(width: 6),
                 Expanded(
                   child: _voteButton(
                     label: 'YES',
