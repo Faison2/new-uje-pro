@@ -416,16 +416,13 @@ class _RegisterScreenState extends State<RegisterScreen>
                       title: 'REGISTRATION DETAILS',
                       child: Column(
                         children: [
-                          // TIN
+                          // TIN (Optional)
                           _styledField(
                             ctrl: tinNumberController,
-                            label: 'TIN Number',
+                            label: 'TIN Number (Optional)',
                             hint: 'Enter TIN No.',
                             keyboardType: TextInputType.number,
-                            validator: (val) =>
-                            (val == null || val.isEmpty)
-                                ? 'Please enter a TIN Number'
-                                : null,
+                            // No validator — field is optional
                           ),
                           const SizedBox(height: 12),
 
@@ -478,7 +475,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                           ),
                           const SizedBox(height: 12),
 
-                          // Mobile Number
+                          // Mobile Number (Required)
                           _styledField(
                             ctrl: mobileNumberController,
                             label: 'Mobile Number',
@@ -491,16 +488,13 @@ class _RegisterScreenState extends State<RegisterScreen>
                           ),
                           const SizedBox(height: 12),
 
-                          // Account Number
+                          // Account Number (Optional)
                           _styledField(
                             ctrl: accountNumberController,
-                            label: 'Account Number',
+                            label: 'Account Number (Optional)',
                             hint: 'Enter account No.',
                             keyboardType: TextInputType.number,
-                            validator: (val) =>
-                            (val == null || val.isEmpty)
-                                ? 'Please enter an Account Number'
-                                : null,
+                            // No validator — field is optional
                           ),
                         ],
                       ),
