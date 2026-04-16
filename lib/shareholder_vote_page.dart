@@ -768,22 +768,22 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
       String resNumber, String resExistingVote) {
     return Row(
       children: [
-        Expanded(
-          child: _voteButton(
-            label: 'FOR',
-            icon: Icons.thumb_up_outlined,
-            activeColor: Colors.green[700]!,
-            inactiveColor: Colors.green.withOpacity(0.08),
-            isActive: resExistingVote == "1",
-            onTap: () {
-              context.loaderOverlay.show();
-              handleNormalResVote(cdsString, resNumber, "1");
-              Future.delayed(const Duration(milliseconds: 500),
-                      () => setState(() => onSelected = 1));
-            },
-          ),
-        ),
-        const SizedBox(width: 8),
+        // Expanded(
+        //   child: _voteButton(
+        //     label: 'FOR',
+        //     icon: Icons.thumb_up_outlined,
+        //     activeColor: Colors.green[700]!,
+        //     inactiveColor: Colors.green.withOpacity(0.08),
+        //     isActive: resExistingVote == "1",
+        //     onTap: () {
+        //       context.loaderOverlay.show();
+        //       handleNormalResVote(cdsString, resNumber, "1");
+        //       Future.delayed(const Duration(milliseconds: 500),
+        //               () => setState(() => onSelected = 1));
+        //     },
+        //   ),
+        // ),
+        // const SizedBox(width: 8),
         Expanded(
           child: _voteButton(
             label: 'YES',

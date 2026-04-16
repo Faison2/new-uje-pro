@@ -14,7 +14,7 @@
 
     <!-- ✅ OPTIONAL: if using HTTP (non-HTTPS APIs) -->
     <application
-        android:label="uje"
+        android:label="CRDB"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">  <!-- ⚠️ Needed for HTTP APIs -->
