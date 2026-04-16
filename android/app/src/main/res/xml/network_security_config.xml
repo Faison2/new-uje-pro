@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">creg.crdbbank.co.tz</domain>
+        <pin-set>
+            <pin digest="SHA-256">5i4F8Z1XHSlC7MDpjmdYC6UIYtUOGps68HfwbolY0l4=</pin>
+            <!-- Backup pin (example, usually you'd have a second one from a different CA or a future key) -->
+            <!-- <pin digest="SHA-256">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</pin> -->
+        </pin-set>
+    </domain-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

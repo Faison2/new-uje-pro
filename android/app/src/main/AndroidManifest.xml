@@ -12,12 +12,12 @@
     <!-- ✅ OPTIONAL: if your app needs to change network (rare) -->
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
 
-    <!-- ✅ OPTIONAL: if using HTTP (non-HTTPS APIs) -->
     <application
         android:label="CRDB"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true">  <!-- ⚠️ Needed for HTTP APIs -->
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:usesCleartextTraffic="false">
 
         <activity
             android:name=".MainActivity"
