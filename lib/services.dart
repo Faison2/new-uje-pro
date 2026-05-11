@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:uje/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -14,6 +15,35 @@ import 'constants/error_handling.dart';
 import 'constants/ui_constants.dart';
 import 'model/register_model.dart';
 import 'model/register_response.dart';
+
+// Get device info for voting
+Future<Map<String, String>> getDeviceInfoMap() async {
+  final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  Map<String, String> info = {};
+  try {
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      info = {
+        'platform': 'Android',
+        'model': androidInfo.model ?? 'Unknown',
+        'manufacturer': androidInfo.manufacturer ?? 'Unknown',
+        'osVersion': androidInfo.version.release ?? 'Unknown',
+        'deviceId': androidInfo.id ?? 'unknown',
+      };
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      info = {
+        'platform': 'iOS',
+        'model': iosInfo.model ?? 'Unknown',
+        'osVersion': iosInfo.systemVersion ?? 'Unknown',
+        'deviceId': iosInfo.identifierForVendor ?? 'unknown',
+      };
+    }
+  } catch (e) {
+    debugPrint('Device info error: $e');
+  }
+  return info;
+}
 
 
 register(BuildContext context, RegisterModel model) async {
@@ -152,9 +182,15 @@ Future<List<String>> fetchBanks() async {
 
 Future<void> submitVote(BuildContext context, String cdsNumber, String resolutionNumber) async {
   final url = Uri.parse("$baseApiUrl/SubmitVote");
+  final deviceInfo = await getDeviceInfoMap();
+  
   final body = {
     "CDSNo": cdsNumber,
-    "ResolutionNumber": resolutionNumber
+    "ResolutionNumber": resolutionNumber,
+    "DeviceId": deviceInfo['deviceId'],
+    "DevicePlatform": deviceInfo['platform'],
+    "DeviceModel": deviceInfo['model'],
+    "OSVersion": deviceInfo['osVersion'],
   };
   
   final response = await http.post(url, body: body);

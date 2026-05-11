@@ -305,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen>
                               color: Colors.white.withOpacity(0.5)),
                         ),
                         child: const Text(
-                          'LIVE',
+                          'UAT',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 10,

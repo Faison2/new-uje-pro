@@ -785,36 +785,36 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
         // ),
         // const SizedBox(width: 8),
         Expanded(
-          child: _voteButton(
-            label: 'YES',
-            icon: Icons.remove_circle_outline,
-            activeColor: Colors.amber[700]!,
-            inactiveColor: Colors.amber.withOpacity(0.08),
-            isActive: resExistingVote == "3",
-            onTap: () {
-              context.loaderOverlay.show();
-              handleNormalResVote(cdsString, resNumber, "3");
-              Future.delayed(const Duration(milliseconds: 500),
-                      () => setState(() => onSelected = 3));
-            },
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _voteButton(
-            label: 'NO',
-            icon: Icons.thumb_down_outlined,
-            activeColor: Colors.red[600]!,
-            inactiveColor: Colors.red.withOpacity(0.07),
-            isActive: resExistingVote == "2",
-            onTap: () {
-              context.loaderOverlay.show();
-              handleNormalResVote(cdsString, resNumber, "2");
-              Future.delayed(const Duration(milliseconds: 500),
-                      () => setState(() => onSelected = 2));
-            },
-          ),
-        ),
+           child: _voteButton(
+             label: 'YES',
+             icon: Icons.remove_circle_outline,
+             activeColor: Colors.amber[700]!,
+             inactiveColor: Colors.amber.withOpacity(0.08),
+             isActive: resExistingVote == "1",
+             onTap: () {
+               context.loaderOverlay.show();
+               handleNormalResVote(cdsString, resNumber, "1");
+               Future.delayed(const Duration(milliseconds: 500),
+                       () => setState(() => onSelected = 1));
+             },
+           ),
+         ),
+         const SizedBox(width: 8),
+         Expanded(
+           child: _voteButton(
+             label: 'NO',
+             icon: Icons.thumb_down_outlined,
+             activeColor: Colors.red[600]!,
+             inactiveColor: Colors.red.withOpacity(0.07),
+             isActive: resExistingVote == "2",
+             onTap: () {
+               context.loaderOverlay.show();
+               handleNormalResVote(cdsString, resNumber, "2");
+               Future.delayed(const Duration(milliseconds: 500),
+                       () => setState(() => onSelected = 2));
+             },
+           ),
+         ),
       ],
     );
   }

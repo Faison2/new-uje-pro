@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:uje/services.dart';
 import 'package:uje/ProxyElectAll.dart';
 import 'package:uje/proxy_election_vote.dart';
@@ -253,12 +255,18 @@ class _ProxyVotePageState extends State<ProxyVotePage>
   handleNormalVote(
       String cdsNumber, String resNumber, String voteType) async {
     String urlVoteNormalRes = "$baseApiUrl/CommitVoteNormalRes";
+    final deviceInfo = await _getDeviceInfo();
+    
     final response = await http.post(
       Uri.parse(urlVoteNormalRes),
       body: {
         "CDSNo": cdsNumber,
         "ResolutionNumber": resNumber,
-        "Vote": voteType
+        "Vote": voteType,
+        "DeviceId": deviceInfo['deviceId'],
+        "DevicePlatform": deviceInfo['platform'],
+        "DeviceModel": deviceInfo['model'],
+        "OSVersion": deviceInfo['osVersion'],
       },
     );
     final responseJson = json.decode(response.body);
@@ -276,6 +284,8 @@ class _ProxyVotePageState extends State<ProxyVotePage>
   handleElectionVote(String cdsNumber, orderNumber, resolutionNumber,
       voteType) async {
     String voteUrl = "$baseApiUrl/CommitVoteElectionRes";
+    final deviceInfo = await _getDeviceInfo();
+
     final response = await http.post(
       Uri.parse(voteUrl),
       body: {
@@ -283,7 +293,11 @@ class _ProxyVotePageState extends State<ProxyVotePage>
         "ResolutionNumber": resolutionNumber,
         "Vote": orderNumber,
         "VoteType": voteType,
-        "isShareholderorProxy": "Proxy"
+        "isShareholderorProxy": "Proxy",
+        "DeviceId": deviceInfo['deviceId'],
+        "DevicePlatform": deviceInfo['platform'],
+        "DeviceModel": deviceInfo['model'],
+        "OSVersion": deviceInfo['osVersion'],
       },
     );
     final responseJson = json.decode(response.body);
@@ -300,12 +314,18 @@ class _ProxyVotePageState extends State<ProxyVotePage>
   handleNormalVoteAll(
       String resolutionSEQ, String proxyNumber, String voteType) async {
     String urlVoteNormalResAll = "$baseApiUrl/CommitVoteNormalResALL";
+    final deviceInfo = await _getDeviceInfo();
+    
     final response = await http.post(
       Uri.parse(urlVoteNormalResAll),
       body: {
         "resSEQ": resolutionSEQ,
         "ProxyCDS": proxyNumber,
-        "Vote": voteType
+        "Vote": voteType,
+        "DeviceId": deviceInfo['deviceId'],
+        "DevicePlatform": deviceInfo['platform'],
+        "DeviceModel": deviceInfo['model'],
+        "OSVersion": deviceInfo['osVersion'],
       },
     );
     final responseJson = json.decode(response.body);
@@ -323,13 +343,19 @@ class _ProxyVotePageState extends State<ProxyVotePage>
   handleElectionVoteAll(String resolutionSEQ, String proxyNumber,
       String orderNumber, String voteType) async {
     String urlVoteNormalResAll = "$baseApiUrl/VoteForProxyResElectALL";
+    final deviceInfo = await _getDeviceInfo();
+    
     final response = await http.post(
       Uri.parse(urlVoteNormalResAll),
       body: {
         "resSEQ": resolutionSEQ,
         "ProxyCDS": proxyNumber,
         "Vote": orderNumber,
-        "VoteType": voteType
+        "VoteType": voteType,
+        "DeviceId": deviceInfo['deviceId'],
+        "DevicePlatform": deviceInfo['platform'],
+        "DeviceModel": deviceInfo['model'],
+        "OSVersion": deviceInfo['osVersion'],
       },
     );
     final responseJson = json.decode(response.body);
@@ -344,33 +370,61 @@ class _ProxyVotePageState extends State<ProxyVotePage>
     context.loaderOverlay.hide();
   }
 
-  // ── Helper ────────────────────────────────────────────
+   // ── Helper ────────────────────────────────────────────
 
-  void _showToast(String msg) {
-    Fluttertoast.showToast(
-      msg: msg,
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: crdbDarkGreen,
-      textColor: Colors.white,
-      fontSize: 14.0,
-      timeInSecForIosWeb: 3,
-    );
-  }
+   Future<Map<String, String>> _getDeviceInfo() async {
+     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+     Map<String, String> info = {};
+     try {
+       if (Platform.isAndroid) {
+         AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+         info = {
+           'platform': 'Android',
+           'model': androidInfo.model ?? 'Unknown',
+           'osVersion': androidInfo.version.release ?? 'Unknown',
+           'deviceId': androidInfo.id ?? 'unknown',
+         };
+       } else if (Platform.isIOS) {
+         IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+         info = {
+           'platform': 'iOS',
+           'model': iosInfo.model ?? 'Unknown',
+           'osVersion': iosInfo.systemVersion ?? 'Unknown',
+           'deviceId': iosInfo.identifierForVendor ?? 'unknown',
+         };
+       }
+     } catch (e) {
+       debugPrint('Device info error: $e');
+     }
+      return info;
+    }
 
-  void _clearAll() {
-    setState(() {
-      isVisible = false;
-      resolutions.clear();
-      voterController.text = "";
-      cdsString = "";
-      meetingInfo = "";
-      name = "";
-      shares = "";
-      regStatus = "";
-      company = "";
-    });
-  }
+    void _showToast(String msg) {
+      Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: crdbDarkGreen,
+        textColor: Colors.white,
+        fontSize: 14.0,
+        timeInSecForIosWeb: 3,
+      );
+    }
+
+    void _clearAll() {
+      setState(() {
+        isVisible = false;
+        resolutions.clear();
+        voterController.text = "";
+        cdsString = "";
+        meetingInfo = "";
+        name = "";
+        shares = "";
+        regStatus = "";
+        company = "";
+      });
+    }
+
 
   // ── Build ─────────────────────────────────────────────
 
