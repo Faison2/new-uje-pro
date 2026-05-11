@@ -53,6 +53,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
   String resolutionNo = "";
   String cardState = "";
   String voteStatus = "";
+  Map<String, String> selectedVotes = {};
 
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
@@ -103,6 +104,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
       shares = "";
       regStatus = "";
       company = "";
+      selectedVotes.clear();
     });
   }
 
@@ -174,7 +176,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
       _showToast(responseJson[0]["responseMessage"]);
     }
     context.loaderOverlay.hide();
-    getResolutions(cdsNo);
+    _clearAll();
   }
 
   getCandidateList(String resoNumber, String cdsNo) async {
@@ -766,55 +768,70 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
 
   Widget _normalVoteButtons(
       String resNumber, String resExistingVote) {
-    return Row(
+    return Column(
       children: [
-        // Expanded(
-        //   child: _voteButton(
-        //     label: 'FOR',
-        //     icon: Icons.thumb_up_outlined,
-        //     activeColor: Colors.green[700]!,
-        //     inactiveColor: Colors.green.withOpacity(0.08),
-        //     isActive: resExistingVote == "1",
-        //     onTap: () {
-        //       context.loaderOverlay.show();
-        //       handleNormalResVote(cdsString, resNumber, "1");
-        //       Future.delayed(const Duration(milliseconds: 500),
-        //               () => setState(() => onSelected = 1));
-        //     },
-        //   ),
-        // ),
-        // const SizedBox(width: 8),
-        Expanded(
-           child: _voteButton(
-             label: 'YES',
-             icon: Icons.remove_circle_outline,
-             activeColor: Colors.amber[700]!,
-             inactiveColor: Colors.amber.withOpacity(0.08),
-             isActive: resExistingVote == "1",
-             onTap: () {
-               context.loaderOverlay.show();
-               handleNormalResVote(cdsString, resNumber, "1");
-               Future.delayed(const Duration(milliseconds: 500),
-                       () => setState(() => onSelected = 1));
-             },
-           ),
-         ),
-         const SizedBox(width: 8),
-         Expanded(
-           child: _voteButton(
-             label: 'NO',
-             icon: Icons.thumb_down_outlined,
-             activeColor: Colors.red[600]!,
-             inactiveColor: Colors.red.withOpacity(0.07),
-             isActive: resExistingVote == "2",
-             onTap: () {
-               context.loaderOverlay.show();
-               handleNormalResVote(cdsString, resNumber, "2");
-               Future.delayed(const Duration(milliseconds: 500),
-                       () => setState(() => onSelected = 2));
-             },
-           ),
-         ),
+        Row(
+          children: [
+            Expanded(
+              child: _voteButton(
+                label: 'YES',
+                icon: Icons.remove_circle_outline,
+                activeColor: Colors.amber[700]!,
+                inactiveColor: Colors.amber.withOpacity(0.08),
+                isActive: selectedVotes[resNumber] == "1" || resExistingVote == "1",
+                onTap: () {
+                  if (resExistingVote.isEmpty || resExistingVote == "0") {
+                    setState(() => selectedVotes[resNumber] = "1");
+                  }
+                },
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _voteButton(
+                label: 'NO',
+                icon: Icons.thumb_down_outlined,
+                activeColor: Colors.red[600]!,
+                inactiveColor: Colors.red.withOpacity(0.07),
+                isActive: selectedVotes[resNumber] == "2" || resExistingVote == "2",
+                onTap: () {
+                  if (resExistingVote.isEmpty || resExistingVote == "0") {
+                    setState(() => selectedVotes[resNumber] = "2");
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+        if (selectedVotes.containsKey(resNumber)) ...[
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            height: 44,
+            child: ElevatedButton(
+              onPressed: () {
+                context.loaderOverlay.show();
+                String vote = selectedVotes[resNumber]!;
+                setState(() => selectedVotes.remove(resNumber));
+                handleNormalResVote(cdsString, resNumber, vote);
+              },
+              child: const Text(
+                'Submit',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: crdbDarkGreen,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                elevation: 2,
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -1075,3 +1092,8 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
     );
   }
 }
+
+
+
+
+
