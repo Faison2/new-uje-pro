@@ -54,6 +54,8 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
   String cardState = "";
   String voteStatus = "";
   Map<String, String> selectedVotes = {};
+  bool showMessage = false;
+  String message = "";
 
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
@@ -105,6 +107,8 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
       regStatus = "";
       company = "";
       selectedVotes.clear();
+      showMessage = false;
+      message = "";
     });
   }
 
@@ -146,6 +150,19 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
           isVisible = true;
         });
         _animController.forward(from: 0);
+        bool allVoted = voterModel.resItem!.every((res) => res.resExistingVote!.isNotEmpty && res.resExistingVote != "0");
+        if (allVoted) {
+          setState(() {
+            showMessage = true;
+            message = "Already Voted";
+            isVisible = false;
+          });
+        } else {
+          setState(() {
+            showMessage = false;
+            message = "";
+          });
+        }
         context.loaderOverlay.hide();
       }
     } else {
@@ -265,8 +282,33 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
             // ── Search Card ───────────────────────────
             _buildSearchCard(),
 
-            // ── Shareholder Info Banner ───────────────
-            if (isVisible && name.isNotEmpty) ...[
+            if (showMessage) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.yellow[100],
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.yellow[700]!, width: 1.2),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline, color: Colors.yellow[700]),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        message,
+                        style: TextStyle(
+                          color: Colors.yellow[800],
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ] else if (isVisible && name.isNotEmpty) ...[
               const SizedBox(height: 16),
               _buildShareholderBanner(),
             ],
@@ -768,6 +810,9 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
 
   Widget _normalVoteButtons(
       String resNumber, String resExistingVote) {
+    if (resExistingVote.isNotEmpty && resExistingVote != "0") {
+      return const SizedBox.shrink();
+    }
     return Column(
       children: [
         Row(
@@ -1092,8 +1137,3 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
     );
   }
 }
-
-
-
-
-
