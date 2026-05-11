@@ -360,7 +360,6 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                          onTap: () {
                            handleNormalVoteAll(
                                resolutionSEQ, proxyNumber, "1");
-                           setState(() => shareholders.clear());
                          },
                        ),
                      ),
@@ -375,7 +374,6 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                          onTap: () {
                            handleNormalVoteAll(
                                resolutionSEQ, proxyNumber, "2");
-                           setState(() => shareholders.clear());
                          },
                        ),
                      ),
@@ -745,9 +743,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                      bgColor: Colors.amber.withOpacity(0.07),
                      isActive: existingVote == "1",
                      onTap: () {
-                       context.loaderOverlay.show();
                        handleNormalVote(shareholder, resNo, "1");
-                       setState(() => shareholders.clear());
                      },
                    ),
                  ),
@@ -760,9 +756,7 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
                      bgColor: Colors.red.withOpacity(0.07),
                      isActive: existingVote == "2",
                      onTap: () {
-                       context.loaderOverlay.show();
                        handleNormalVote(shareholder, resNo, "2");
-                       setState(() => shareholders.clear());
                      },
                    ),
                  ),

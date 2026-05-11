@@ -335,6 +335,7 @@ class _ProxyPageState extends State<ProxyPage> {
     );
   }
 
+  // ── _styledField now accepts an optional validator ────
   Widget _styledField({
     required TextEditingController controller,
     required String label,
@@ -342,12 +343,15 @@ class _ProxyPageState extends State<ProxyPage> {
     bool enabled = true,
     TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
+    String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
       enabled: enabled,
       keyboardType: keyboardType,
       maxLines: maxLines,
+      validator: validator,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       style: const TextStyle(fontSize: 14, color: crdbDark),
       decoration: InputDecoration(
         labelText: label,
@@ -377,6 +381,14 @@ class _ProxyPageState extends State<ProxyPage> {
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
               color: Colors.grey.withOpacity(0.2)),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.red, width: 1.2),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.red, width: 1.5),
         ),
       ),
     );
@@ -524,11 +536,18 @@ class _ProxyPageState extends State<ProxyPage> {
                       maxLines: 2,
                     ),
                     const SizedBox(height: 12),
+                    // ── Phone Number: MANDATORY ───────────
                     _styledField(
                       controller: proxyNumberController,
-                      label: 'Phone Number',
+                      label: 'Phone Number *',
                       hint: 'e.g. 0712345678',
                       keyboardType: TextInputType.phone,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Phone number is required';
+                        }
+                        return null;
+                      },
                     ),
                   ],
                 ),
@@ -620,10 +639,18 @@ class _ProxyPageState extends State<ProxyPage> {
                       },
                     ),
                     const SizedBox(height: 12),
+                    // ── Mobile Number: MANDATORY ──────────
                     _styledField(
                       controller: mobileNumberController,
-                      label: 'Mobile Number (Optional)',
+                      label: 'Mobile Number *',
                       hint: 'Enter mobile No.',
+                      keyboardType: TextInputType.phone,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Mobile number is required';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 12),
                     _styledField(
@@ -655,6 +682,10 @@ class _ProxyPageState extends State<ProxyPage> {
                           elevation: 2,
                         ),
                         onPressed: () {
+                          // Validate form before proceeding
+                          if (!registrationKey2.currentState!.validate()) {
+                            return;
+                          }
                           AddProxyShareholderModel model =
                           AddProxyShareholderModel(
                             cdsNumberController.text,
@@ -769,6 +800,10 @@ class _ProxyPageState extends State<ProxyPage> {
                     elevation: 3,
                   ),
                   onPressed: () async {
+                    // Validate form before proceeding
+                    if (!registrationKey2.currentState!.validate()) {
+                      return;
+                    }
                     if (proxyNameController.text.isEmpty) {
                       _showCrdbToast("Please enter a Proxy Name!");
                     } else if (data.isEmpty) {
