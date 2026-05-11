@@ -150,7 +150,8 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
           isVisible = true;
         });
         _animController.forward(from: 0);
-        bool allVoted = voterModel.resItem!.every((res) => res.resExistingVote!.isNotEmpty && res.resExistingVote != "0");
+        bool allVoted = voterModel.resItem!.every((res) =>
+        res.resExistingVote!.isNotEmpty && res.resExistingVote != "0");
         if (allVoted) {
           setState(() {
             showMessage = true;
@@ -248,6 +249,9 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
   @override
   Widget build(BuildContext context) {
     cdsNo = cdsString;
+    // ── FIX: capture bottom inset for system nav bar ───
+    final double bottomPadding = MediaQuery.of(context).padding.bottom;
+
     return Scaffold(
       backgroundColor: crdbBackground,
       appBar: AppBar(
@@ -274,109 +278,115 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Search Card ───────────────────────────
-            _buildSearchCard(),
+      // ── FIX: SafeArea with top:false so AppBar is unaffected ──
+      body: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          // ── FIX: add system nav bar height to bottom padding ──
+          padding: EdgeInsets.fromLTRB(16, 20, 16, 24 + bottomPadding),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── Search Card ───────────────────────────
+              _buildSearchCard(),
 
-            if (showMessage) ...[
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.yellow[100],
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.yellow[700]!, width: 1.2),
+              if (showMessage) ...[
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.yellow[100],
+                    borderRadius: BorderRadius.circular(10),
+                    border:
+                    Border.all(color: Colors.yellow[700]!, width: 1.2),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.yellow[700]),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          message,
+                          style: TextStyle(
+                            color: Colors.yellow[800],
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Row(
+              ] else if (isVisible && name.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                _buildShareholderBanner(),
+              ],
+
+              // ── Resolutions Section ───────────────────
+              if (isVisible) ...[
+                const SizedBox(height: 20),
+                Row(
                   children: [
-                    Icon(Icons.info_outline, color: Colors.yellow[700]),
+                    Container(
+                      width: 4,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: crdbGreen,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
                     const SizedBox(width: 8),
-                    Expanded(
+                    const Text(
+                      'RESOLUTIONS',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: crdbGreen,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: crdbGreen.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       child: Text(
-                        message,
-                        style: TextStyle(
-                          color: Colors.yellow[800],
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                        '${voterModel.resItem?.length ?? 0} items',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: crdbGreen,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-            ] else if (isVisible && name.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              _buildShareholderBanner(),
-            ],
-
-            // ── Resolutions Section ───────────────────
-            if (isVisible) ...[
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Container(
-                    width: 4,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      color: crdbGreen,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+                const SizedBox(height: 12),
+                FadeTransition(
+                  opacity: _fadeAnim,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: voterModel.resItem?.length ?? 0,
+                    itemBuilder: (context, index) {
+                      return _resolutionTile(
+                        context,
+                        index,
+                        voterModel.resItem![index].resText!,
+                        voterModel.resItem![index].resType!,
+                        voterModel.resItem![index].resNo!,
+                        voterModel.resItem![index].resExistingVote!,
+                        voteType,
+                      );
+                    },
                   ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'RESOLUTIONS',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: crdbGreen,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: crdbGreen.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      '${voterModel.resItem?.length ?? 0} items',
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: crdbGreen,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              FadeTransition(
-                opacity: _fadeAnim,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: voterModel.resItem?.length ?? 0,
-                  itemBuilder: (context, index) {
-                    return _resolutionTile(
-                      context,
-                      index,
-                      voterModel.resItem![index].resText!,
-                      voterModel.resItem![index].resType!,
-                      voterModel.resItem![index].resNo!,
-                      voterModel.resItem![index].resExistingVote!,
-                      voteType,
-                    );
-                  },
                 ),
-              ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -442,7 +452,8 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                 // CDS Input
                 TextFormField(
                   controller: voterController,
-                  style: const TextStyle(fontSize: 14, color: crdbTextDark),
+                  style:
+                  const TextStyle(fontSize: 14, color: crdbTextDark),
                   decoration: InputDecoration(
                     labelText: 'CDS Number',
                     hintText: 'Enter your CDS No.',
@@ -517,8 +528,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                                   fontSize: 15)),
                           style: OutlinedButton.styleFrom(
                             side: const BorderSide(
-                                color: Colors.redAccent,
-                                width: 1.2),
+                                color: Colors.redAccent, width: 1.2),
                             shape: RoundedRectangleBorder(
                                 borderRadius:
                                 BorderRadius.circular(10)),
@@ -823,7 +833,8 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                 icon: Icons.remove_circle_outline,
                 activeColor: Colors.amber[700]!,
                 inactiveColor: Colors.amber.withOpacity(0.08),
-                isActive: selectedVotes[resNumber] == "1" || resExistingVote == "1",
+                isActive: selectedVotes[resNumber] == "1" ||
+                    resExistingVote == "1",
                 onTap: () {
                   if (resExistingVote.isEmpty || resExistingVote == "0") {
                     setState(() => selectedVotes[resNumber] = "1");
@@ -838,7 +849,8 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                 icon: Icons.thumb_down_outlined,
                 activeColor: Colors.red[600]!,
                 inactiveColor: Colors.red.withOpacity(0.07),
-                isActive: selectedVotes[resNumber] == "2" || resExistingVote == "2",
+                isActive: selectedVotes[resNumber] == "2" ||
+                    resExistingVote == "2",
                 onTap: () {
                   if (resExistingVote.isEmpty || resExistingVote == "0") {
                     setState(() => selectedVotes[resNumber] = "2");
@@ -860,6 +872,12 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                 setState(() => selectedVotes.remove(resNumber));
                 handleNormalResVote(cdsString, resNumber, vote);
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: crdbDarkGreen,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                elevation: 2,
+              ),
               child: const Text(
                 'Submit',
                 style: TextStyle(
@@ -867,12 +885,6 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: crdbDarkGreen,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                elevation: 2,
               ),
             ),
           ),
@@ -898,9 +910,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
           color: isActive ? activeColor : inactiveColor,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isActive
-                ? activeColor
-                : activeColor.withOpacity(0.3),
+            color: isActive ? activeColor : activeColor.withOpacity(0.3),
             width: 1.2,
           ),
         ),
@@ -910,8 +920,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
             if (isActive)
               const Icon(Icons.check, color: Colors.white, size: 14),
             if (!isActive)
-              Icon(icon,
-                  color: activeColor.withOpacity(0.8), size: 14),
+              Icon(icon, color: activeColor.withOpacity(0.8), size: 14),
             const SizedBox(width: 4),
             Text(
               label,
@@ -1041,9 +1050,8 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
         color: hasVoted ? crdbBackground : crdbSurface,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: hasVoted
-              ? crdbGreen.withOpacity(0.3)
-              : crdbDivider,
+          color:
+          hasVoted ? crdbGreen.withOpacity(0.3) : crdbDivider,
         ),
       ),
       child: Row(

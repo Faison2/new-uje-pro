@@ -611,10 +611,10 @@ class _ProxyNormalVotePageState extends State<ProxyNormalVotePage>
      String votedLabel = '';
      if (existingVote == "2") {
        votedColor = Colors.red[600];
-       votedLabel = 'Against';
+       votedLabel = 'NO';
      } else if (existingVote == "1") {
        votedColor = Colors.amber[700];
-       votedLabel = 'For';
+       votedLabel = 'YES';
      }
 
      final bool hasVoted = existingVote == "2" || existingVote == "1";
