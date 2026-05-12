@@ -1,6 +1,3 @@
-
-
-
 import 'dart:convert';
 import 'dart:io';
 
@@ -45,10 +42,34 @@ Future<Map<String, String>> getDeviceInfoMap() async {
   return info;
 }
 
+// ── Check if shareholder is already registered ─────────────────────────────
+// Both registered and not-registered return responseCode 0,
+// so we check the message text instead.
+Future<bool> isAlreadyRegistered(String cdsNumber) async {
+  try {
+    final url = Uri.parse(
+      '$baseApiUrl/getRegistrationDetails?myIncomingCDSNumber=$cdsNumber',
+    );
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data is List && data.isNotEmpty) {
+        final String message =
+        (data[0]['responseMessage'] ?? '').toString().toLowerCase();
+        // "Shareholder Already Registered" → block registration
+        // "Shareholder NOT Registered"     → allow registration
+        return message.contains('already registered');
+      }
+    }
+  } catch (e) {
+    debugPrint('Registration check error: $e');
+  }
+  return false;
+}
 
 register(BuildContext context, RegisterModel model) async {
   String api = '$baseApiUrl/register';
-  try{
+  try {
     final response = await http.post(
       Uri.parse(api),
       body: {
@@ -64,18 +85,19 @@ register(BuildContext context, RegisterModel model) async {
     httpErrorHandler(
         response: response,
         context: context,
-        onSuccess: (){
+        onSuccess: () {
           showToast(context, responseJson[0]['responseMessage']);
-          Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => HomeScreen()));
         });
-
-  } catch(e){
+  } catch (e) {
     context.loaderOverlay.hide();
     debugPrint(e.toString());
   }
 }
 
-Future<String> confirmName(BuildContext context, String shareholderNumber) async {
+Future<String> confirmName(
+    BuildContext context, String shareholderNumber) async {
   String api = '$baseApiUrl/register';
   String shareholderName = "";
   try {
@@ -85,19 +107,18 @@ Future<String> confirmName(BuildContext context, String shareholderNumber) async
         "ShareholderNumber": shareholderNumber,
         "RegAction": "GetDetails"
       },
-
     );
     httpErrorHandler(
         response: response,
         context: context,
         onSuccess: () {
           List data = jsonDecode(response.body);
-          for(Map<String, dynamic> i in data){
+          for (Map<String, dynamic> i in data) {
             RegisterResponseModel model = RegisterResponseModel.fromJson(i);
             shareholderName = model.responseMessage!;
           }
         });
-  } catch(e){
+  } catch (e) {
     context.loaderOverlay.hide();
     debugPrint("ERROR: " + e.toString());
     showToast(context, "Something went wrong, please try again later.");
@@ -105,52 +126,50 @@ Future<String> confirmName(BuildContext context, String shareholderNumber) async
   return shareholderName;
 }
 
-Future<String> checkName(String shareholderNumber, BuildContext context) async{
+Future<String> checkName(
+    String shareholderNumber, BuildContext context) async {
   Dio dio = Dio();
-  try{
-    final response = await dio.post("$baseApiUrl/register",
-        data: {
-          "ShareholderNumber": shareholderNumber,
-          "RegAction": "GetDetails"
-        },
-        options: Options(
-            headers: {
-              "content-type": "application/json"
-            }
-        )
+  try {
+    final response = await dio.post(
+      "$baseApiUrl/register",
+      data: {
+        "ShareholderNumber": shareholderNumber,
+        "RegAction": "GetDetails"
+      },
+      options: Options(headers: {"content-type": "application/json"}),
     );
     context.loaderOverlay.hide();
-    if(response.statusCode == HttpStatus.ok){
-      if(response.data[0]["responseCode"] == 0){
-        RegisterResponseModel model = RegisterResponseModel.fromJson(response.data[0]);
+    if (response.statusCode == HttpStatus.ok) {
+      if (response.data[0]["responseCode"] == 0) {
+        RegisterResponseModel model =
+        RegisterResponseModel.fromJson(response.data[0]);
         String shareholderName = model.responseMessage!;
-
         return shareholderName;
       } else {
         return response.data[0]["responseMessage"];
       }
-    } else return "An error occurred, please try again later";
-  } catch(e){
+    } else {
+      return "An error occurred, please try again later";
+    }
+  } catch (e) {
     debugPrint(e.toString());
     rethrow;
   }
 }
 
-
 Future<List<String>> getBanks(BuildContext context) async {
   List<String> bankNames = ["Bank"];
-  try{
+  try {
     final uri = Uri.parse("$baseApiUrl/getBanksList");
     final response = await http.get(uri);
     var data = jsonDecode(response.body);
-    for(String element in data){
+    for (String element in data) {
       bankNames.add(element);
     }
-
     banks.addAll(bankNames);
     debugPrint("banks retrieved");
     return bankNames;
-  } catch(e){
+  } catch (e) {
     debugPrint(e.toString());
     rethrow;
   }
@@ -158,32 +177,33 @@ Future<List<String>> getBanks(BuildContext context) async {
 
 Future<List<String>> fetchBanks() async {
   final Dio _dio = Dio();
-  try{
-
+  try {
     final url = "$baseApiUrl/getBanksList";
-
-    final response = await _dio.get(url, options: Options(headers: {
-      "content-type": "application/json"
-    }));
-
-    if(response.statusCode == HttpStatus.ok){
+    final response = await _dio.get(
+      url,
+      options: Options(headers: {"content-type": "application/json"}),
+    );
+    if (response.statusCode == HttpStatus.ok) {
       List<String> bankNames = [];
-      for (int i =0; i< response.data.length; i++){
+      for (int i = 0; i < response.data.length; i++) {
         bankNames.add(response.data[i]);
       }
       banks.addAll(bankNames);
       return bankNames;
-    } else return ["Failed to get banks"];
-  } catch(e){
+    } else {
+      return ["Failed to get banks"];
+    }
+  } catch (e) {
     debugPrint(e.toString());
   }
   return ["Failed to get banks"];
 }
 
-Future<void> submitVote(BuildContext context, String cdsNumber, String resolutionNumber) async {
+Future<void> submitVote(
+    BuildContext context, String cdsNumber, String resolutionNumber) async {
   final url = Uri.parse("$baseApiUrl/SubmitVote");
   final deviceInfo = await getDeviceInfoMap();
-  
+
   final body = {
     "CDSNo": cdsNumber,
     "ResolutionNumber": resolutionNumber,
@@ -192,19 +212,20 @@ Future<void> submitVote(BuildContext context, String cdsNumber, String resolutio
     "DeviceModel": deviceInfo['model'],
     "OSVersion": deviceInfo['osVersion'],
   };
-  
+
   final response = await http.post(url, body: body);
 
-  httpErrorHandler(response: response,
+  httpErrorHandler(
+      response: response,
       context: context,
-      onSuccess: (){
+      onSuccess: () {
         context.loaderOverlay.hide();
         debugPrint(response.body);
         final responseJson = jsonDecode(response.body);
-        if(responseJson[0]["responseCode"] == 0){
+        if (responseJson[0]["responseCode"] == 0) {
           showToast(context, responseJson[0]["responseMessage"]);
           Navigator.pop(context);
-        } else{
+        } else {
           showToast(context, responseJson[0]["responseMessage"]);
         }
       });
@@ -213,8 +234,7 @@ Future<void> submitVote(BuildContext context, String cdsNumber, String resolutio
 Future<String> postProxyName(String proxyName, String proxyType, String phone,
     String shareholderProxyCDS, BuildContext context) async {
   String proxyNumber = "";
-  String proxyNameUrl =
-      "$baseApiUrl/CommitProxyRegistration";
+  String proxyNameUrl = "$baseApiUrl/CommitProxyRegistration";
 
   final response = await http.post(
     Uri.parse(proxyNameUrl),
@@ -225,12 +245,13 @@ Future<String> postProxyName(String proxyName, String proxyType, String phone,
       "ShareholderProxyCDS": shareholderProxyCDS
     },
   );
-  httpErrorHandler(response: response,
+  httpErrorHandler(
+      response: response,
       context: context,
-      onSuccess: (){
+      onSuccess: () {
         final responseJson = json.decode(response.body);
         debugPrint("$responseJson");
-        if(responseJson[0]["respRef"].toString() != ""){
+        if (responseJson[0]["respRef"].toString() != "") {
           proxyNumber = responseJson[0]["respRef"].toString();
           showToast(context, responseJson[0]["responseMessage"]);
         } else {

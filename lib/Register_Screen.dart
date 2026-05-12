@@ -43,6 +43,9 @@ class _RegisterScreenState extends State<RegisterScreen>
   bool hasSearched = false;
   bool _isShown = true;
 
+  // ── Registration check future ──────────────────────────
+  Future<bool>? _registrationFuture;
+
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
@@ -315,12 +318,14 @@ class _RegisterScreenState extends State<RegisterScreen>
                     ctrl: controller,
                     label: 'CDS Number',
                     hint: 'Enter your CDS No.',
-                    onChanged: (_) =>
-                        setState(() => hasSearched = false),
+                    onChanged: (_) => setState(() {
+                      hasSearched = false;
+                      _registrationFuture = null;
+                    }),
                   ),
                   const SizedBox(height: 10),
 
-                  // Name result from FutureBuilder
+                  // ── Name result from FutureBuilder ────
                   if (hasSearched)
                     FutureBuilder(
                       future: checkName(controller.text, context),
@@ -371,7 +376,50 @@ class _RegisterScreenState extends State<RegisterScreen>
                       },
                     ),
 
-                  // Search Button
+                  // ── Already Registered Banner ─────────
+                  if (hasSearched && _registrationFuture != null)
+                    FutureBuilder<bool>(
+                      future: _registrationFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.done &&
+                            snapshot.data == true) {
+                          return Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.only(bottom: 10),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFF3CD),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: const Color(0xFFFFCC02),
+                                  width: 1.2),
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.info_outline,
+                                    color: Color(0xFF856404), size: 18),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Shareholder Already Registered',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF856404),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
+
+                  // ── Search Button ─────────────────────
                   SizedBox(
                     width: double.infinity,
                     height: 46,
@@ -395,6 +443,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                         context.loaderOverlay.show();
                         setState(() {
                           hasSearched = true;
+                          // Kick off registration check in parallel
+                          _registrationFuture =
+                              isAlreadyRegistered(controller.text);
                         });
                         _animController.forward(from: 0);
                       },
@@ -406,142 +457,132 @@ class _RegisterScreenState extends State<RegisterScreen>
 
             // ── Registration Details (shown after search) ──
             if (hasSearched) ...[
-              FadeTransition(
-                opacity: _fadeAnim,
-                child: SlideTransition(
-                  position: _slideAnim,
-                  child: Form(
-                    key: registrationKey2,
-                    child: _sectionCard(
-                      title: 'REGISTRATION DETAILS',
-                      child: Column(
-                        children: [
-                          // TIN (Optional)
-                          _styledField(
-                            ctrl: tinNumberController,
-                            label: 'TIN Number (Optional)',
-                            hint: 'Enter TIN No.',
-                            keyboardType: TextInputType.number,
-                            // No validator — field is optional
-                          ),
-                          const SizedBox(height: 12),
-
-                          // Bank Dropdown
-                          DropdownButtonFormField<String>(
-                            value: bankName,
-                            decoration: InputDecoration(
-                              labelText: 'Select Bank',
-                              labelStyle: TextStyle(
-                                  color: crdbDarkGreen.withOpacity(0.7),
-                                  fontSize: 13),
-                              filled: true,
-                              fillColor: crdbSurface,
-                              contentPadding:
-                              const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 14),
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                    color: crdbDarkGreen.withOpacity(0.2)),
+              FutureBuilder<bool>(
+                future: _registrationFuture,
+                builder: (context, snapshot) {
+                  // Hide the form entirely if already registered
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.data == true) {
+                    return const SizedBox.shrink();
+                  }
+                  return FadeTransition(
+                    opacity: _fadeAnim,
+                    child: SlideTransition(
+                      position: _slideAnim,
+                      child: Form(
+                        key: registrationKey2,
+                        child: _sectionCard(
+                          title: 'REGISTRATION DETAILS',
+                          child: Column(
+                            children: [
+                              // TIN (Optional)
+                              _styledField(
+                                ctrl: tinNumberController,
+                                label: 'TIN Number (Optional)',
+                                hint: 'Enter TIN No.',
+                                keyboardType: TextInputType.number,
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                    color: crdbDarkGreen.withOpacity(0.25)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                BorderRadius.circular(10),
-                                borderSide: const BorderSide(
-                                    color: crdbDarkGreen, width: 1.5),
-                              ),
-                            ),
-                            icon: const Icon(
-                                Icons.keyboard_arrow_down,
-                                color: crdbDarkGreen),
-                            items: banks.map((item) {
-                              return DropdownMenuItem(
-                                  value: item, child: Text(item));
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              if (newValue != null &&
-                                  newValue != bankName) {
-                                setState(
-                                        () => bankName = newValue);
-                              }
-                            },
-                          ),
-                          const SizedBox(height: 12),
+                              const SizedBox(height: 12),
 
-                          // Mobile Number (Required)
-                          _styledField(
-                            ctrl: mobileNumberController,
-                            label: 'Mobile Number',
-                            hint: 'e.g. 0712345678',
-                            keyboardType: TextInputType.phone,
-                            validator: (val) =>
-                            (val == null || val.isEmpty)
-                                ? 'Please enter a Mobile Number'
-                                : null,
-                          ),
-                          const SizedBox(height: 12),
+                              // Bank Dropdown
+                              DropdownButtonFormField<String>(
+                                value: bankName,
+                                decoration: InputDecoration(
+                                  labelText: 'Select Bank',
+                                  labelStyle: TextStyle(
+                                      color:
+                                      crdbDarkGreen.withOpacity(0.7),
+                                      fontSize: 13),
+                                  filled: true,
+                                  fillColor: crdbSurface,
+                                  contentPadding:
+                                  const EdgeInsets.symmetric(
+                                      horizontal: 14, vertical: 14),
+                                  border: OutlineInputBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                        color: crdbDarkGreen
+                                            .withOpacity(0.2)),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                        color: crdbDarkGreen
+                                            .withOpacity(0.25)),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(10),
+                                    borderSide: const BorderSide(
+                                        color: crdbDarkGreen,
+                                        width: 1.5),
+                                  ),
+                                ),
+                                icon: const Icon(
+                                    Icons.keyboard_arrow_down,
+                                    color: crdbDarkGreen),
+                                items: banks.map((item) {
+                                  return DropdownMenuItem(
+                                      value: item,
+                                      child: Text(item));
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  if (newValue != null &&
+                                      newValue != bankName) {
+                                    setState(
+                                            () => bankName = newValue);
+                                  }
+                                },
+                              ),
+                              const SizedBox(height: 12),
 
-                          // Account Number (Optional)
-                          _styledField(
-                            ctrl: accountNumberController,
-                            label: 'Account Number (Optional)',
-                            hint: 'Enter account No.',
-                            keyboardType: TextInputType.number,
-                            // No validator — field is optional
+                              // Mobile Number (Required)
+                              _styledField(
+                                ctrl: mobileNumberController,
+                                label: 'Mobile Number',
+                                hint: 'e.g. 0712345678',
+                                keyboardType: TextInputType.phone,
+                                validator: (val) =>
+                                (val == null || val.isEmpty)
+                                    ? 'Please enter a Mobile Number'
+                                    : null,
+                              ),
+                              const SizedBox(height: 12),
+
+                              // Account Number (Optional)
+                              _styledField(
+                                ctrl: accountNumberController,
+                                label: 'Account Number (Optional)',
+                                hint: 'Enter account No.',
+                                keyboardType: TextInputType.number,
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ],
 
             // ── Register Button ───────────────────────
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.how_to_reg,
-                    color: Colors.white, size: 20),
-                label: const Text(
-                  'REGISTER',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: crdbDarkGreen,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
-                  elevation: 3,
-                ),
-                onPressed: () {
-                  if (_isShown) {
-                    if (registrationKey2.currentState!.validate()) {
-                      RegisterModel model = RegisterModel(
-                          shareholderNumber: controller.text,
-                          mobileNumber: mobileNumberController.text,
-                          tin: tinNumberController.text,
-                          bank: bankName,
-                          accountNumber:
-                          accountNumberController.text);
-                      showMyDialog(context, model);
-                    }
+            // Hide register button if already registered
+            if (hasSearched && _registrationFuture != null)
+              FutureBuilder<bool>(
+                future: _registrationFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.data == true) {
+                    return const SizedBox.shrink();
                   }
+                  return _buildRegisterButton();
                 },
-              ),
-            ),
+              )
+            else
+              _buildRegisterButton(),
 
             const SizedBox(height: 16),
 
@@ -556,6 +597,45 @@ class _RegisterScreenState extends State<RegisterScreen>
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildRegisterButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 52,
+      child: ElevatedButton.icon(
+        icon: const Icon(Icons.how_to_reg,
+            color: Colors.white, size: 20),
+        label: const Text(
+          'REGISTER',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.0,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: crdbDarkGreen,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14)),
+          elevation: 3,
+        ),
+        onPressed: () {
+          if (_isShown) {
+            if (registrationKey2.currentState!.validate()) {
+              RegisterModel model = RegisterModel(
+                  shareholderNumber: controller.text,
+                  mobileNumber: mobileNumberController.text,
+                  tin: tinNumberController.text,
+                  bank: bankName,
+                  accountNumber: accountNumberController.text);
+              showMyDialog(context, model);
+            }
+          }
+        },
       ),
     );
   }
