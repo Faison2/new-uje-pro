@@ -578,10 +578,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                                   ),
                                   onPressed: () {
                                     context.loaderOverlay.show();
-                                    Future.delayed(
-                                        const Duration(seconds: 5), () {
-                                      getResolutions(respRef);
-                                    });
+                                    getResolutions(respRef);
                                   },
                                 ),
                               ),

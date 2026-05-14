@@ -63,12 +63,13 @@ class _ProxyPageState extends State<ProxyPage> {
     proxyNameController.addListener(() {
       proxyName = proxyNameController.text;
     });
+
+    // ── FIX: always mirror proxy phone → mobile number, no isShareholder guard
     proxyNumberController.addListener(() {
-      if (isShareholder) {
-        mobileNumberController.text = proxyNumberController.text;
-      }
+      mobileNumberController.text = proxyNumberController.text;
       phoneNumber = proxyNumberController.text;
     });
+
     bankController = TextEditingController();
     accountNumberController = TextEditingController();
     tinNumberController = TextEditingController();
@@ -144,7 +145,8 @@ class _ProxyPageState extends State<ProxyPage> {
           tinNumberController.text = "";
           accountNumberController.text = "";
           bankName = "Bank";
-          mobileNumberController.text = "";
+          // ── FIX: restore mobile number from proxy phone instead of clearing it
+          mobileNumberController.text = proxyNumberController.text;
         });
         showToast(context, responseJson[0]["responseMessage"]);
       } else {
@@ -335,7 +337,6 @@ class _ProxyPageState extends State<ProxyPage> {
     );
   }
 
-  // ── _styledField now accepts an optional validator ────
   Widget _styledField({
     required TextEditingController controller,
     required String label,
@@ -536,7 +537,6 @@ class _ProxyPageState extends State<ProxyPage> {
                       maxLines: 2,
                     ),
                     const SizedBox(height: 12),
-                    // ── Phone Number: MANDATORY ───────────
                     _styledField(
                       controller: proxyNumberController,
                       label: 'Phone Number *',
@@ -639,7 +639,6 @@ class _ProxyPageState extends State<ProxyPage> {
                       },
                     ),
                     const SizedBox(height: 12),
-                    // ── Mobile Number: MANDATORY ──────────
                     _styledField(
                       controller: mobileNumberController,
                       label: 'Mobile Number *',
@@ -682,7 +681,6 @@ class _ProxyPageState extends State<ProxyPage> {
                           elevation: 2,
                         ),
                         onPressed: () {
-                          // Validate form before proceeding
                           if (!registrationKey2.currentState!.validate()) {
                             return;
                           }
@@ -800,7 +798,6 @@ class _ProxyPageState extends State<ProxyPage> {
                     elevation: 3,
                   ),
                   onPressed: () async {
-                    // Validate form before proceeding
                     if (!registrationKey2.currentState!.validate()) {
                       return;
                     }
@@ -837,10 +834,13 @@ class _ProxyPageState extends State<ProxyPage> {
                           _showProxyNumberDialog(context, proxyNumb);
                         }
                       });
+                      // Clear everything only on final registration
                       setState(() {
                         cdsNumberController.text = "";
                         shareHolderController.text = "";
                         proxyNameController.text = "";
+                        proxyNumberController.text = "";
+                        mobileNumberController.text = "";
                         data.clear();
                       });
                     }
