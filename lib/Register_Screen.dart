@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:uje/services.dart';
 import 'package:uje/widgets/confirm_registration.dart';
+import 'package:uje/widgets/secure_text_field.dart';
+import 'package:uje/services/keylogger_protection_service.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'constants/constants.dart';
@@ -53,6 +55,9 @@ class _RegisterScreenState extends State<RegisterScreen>
   @override
   void initState() {
     super.initState();
+    // 🔐 Initialize keylogger protection
+    KeyloggerProtectionService().initialize();
+
     controller.addListener(() {
       shareholderNumber = controller.text;
     });
@@ -311,18 +316,19 @@ class _RegisterScreenState extends State<RegisterScreen>
 
             // ── CDS Search Card ───────────────────────
             _sectionCard(
-              title: 'SHAREHOLDER LOOKUP',
-              child: Column(
-                children: [
-                  _styledField(
-                    ctrl: controller,
-                    label: 'CDS Number',
-                    hint: 'Enter your CDS No.',
-                    onChanged: (_) => setState(() {
-                      hasSearched = false;
-                      _registrationFuture = null;
-                    }),
-                  ),
+               title: 'SHAREHOLDER LOOKUP',
+               child: Column(
+                 children: [
+                   // 🔐 CDS Number - Using SecureTextField for keylogger protection
+                   SecureTextField(
+                     controller: controller,
+                     label: 'CDS Number',
+                     hint: 'Enter your CDS No.',
+                     onChanged: (_) => setState(() {
+                       hasSearched = false;
+                       _registrationFuture = null;
+                     }),
+                   ),
                   const SizedBox(height: 10),
 
                   // ── Name result from FutureBuilder ────
@@ -475,14 +481,14 @@ class _RegisterScreenState extends State<RegisterScreen>
                           title: 'REGISTRATION DETAILS',
                           child: Column(
                             children: [
-                              // TIN (Optional)
-                              _styledField(
-                                ctrl: tinNumberController,
-                                label: 'TIN Number (Optional)',
-                                hint: 'Enter TIN No.',
-                                keyboardType: TextInputType.number,
-                              ),
-                              const SizedBox(height: 12),
+                               // 🔐 TIN (Optional) - Using SecureTextField for keylogger protection
+                               SecureTextField(
+                                 controller: tinNumberController,
+                                 label: 'TIN Number (Optional)',
+                                 hint: 'Enter TIN No.',
+                                 keyboardType: TextInputType.number,
+                               ),
+                               const SizedBox(height: 12),
 
                               // Bank Dropdown
                               DropdownButtonFormField<String>(
@@ -538,26 +544,26 @@ class _RegisterScreenState extends State<RegisterScreen>
                               ),
                               const SizedBox(height: 12),
 
-                              // Mobile Number (Required)
-                              _styledField(
-                                ctrl: mobileNumberController,
-                                label: 'Mobile Number',
-                                hint: 'e.g. 0712345678',
-                                keyboardType: TextInputType.phone,
-                                validator: (val) =>
-                                (val == null || val.isEmpty)
-                                    ? 'Please enter a Mobile Number'
-                                    : null,
-                              ),
-                              const SizedBox(height: 12),
+                               // 🔐 Mobile Number (Required) - Using SecureTextField for keylogger protection
+                               SecureTextField(
+                                 controller: mobileNumberController,
+                                 label: 'Mobile Number',
+                                 hint: 'e.g. 0712345678',
+                                 keyboardType: TextInputType.phone,
+                                 validator: (val) =>
+                                 (val == null || val.isEmpty)
+                                     ? 'Please enter a Mobile Number'
+                                     : null,
+                               ),
+                               const SizedBox(height: 12),
 
-                              // Account Number (Optional)
-                              _styledField(
-                                ctrl: accountNumberController,
-                                label: 'Account Number (Optional)',
-                                hint: 'Enter account No.',
-                                keyboardType: TextInputType.number,
-                              ),
+                               // 🔐 Account Number (Optional) - Using SecureTextField for keylogger protection
+                               SecureTextField(
+                                 controller: accountNumberController,
+                                 label: 'Account Number (Optional)',
+                                 hint: 'Enter account No.',
+                                 keyboardType: TextInputType.number,
+                               ),
                             ],
                           ),
                         ),

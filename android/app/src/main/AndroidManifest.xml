@@ -1,23 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- ✅ INTERNET ACCESS -->
+    <!-- ✅ INTERNET ACCESS - Required for API calls -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <!-- ✅ CHECK NETWORK STATE (recommended) -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-
-    <!-- ✅ OPTIONAL: if using WiFi state -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-
-    <!-- ✅ OPTIONAL: if your app needs to change network (rare) -->
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
 
     <application
         android:label="CRDB"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:usesCleartextTraffic="false">
+        android:usesCleartextTraffic="false"
+        android:allowBackup="false">
 
         <activity
             android:name=".MainActivity"

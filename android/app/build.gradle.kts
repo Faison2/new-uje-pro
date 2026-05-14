@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.uje"
+    namespace = "com.example.crdb"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,10 +20,9 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.uje"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        // 🔐 CRDB Bank Application ID
+        applicationId = "com.example.crdb"
+        // Version information
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -32,9 +31,19 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // 🔐 Use R8 for enhanced obfuscation over ProGuard
+            // R8 provides better optimization and obfuscation capabilities
             signingConfig = signingConfigs.getByName("debug")
+
+            // 🔐 Enable code shrinking, obfuscation, and optimization
+            isMinifyEnabled = true
+            isShrinkResources = true
+
+            // 🔐 Use R8 compiler for advanced obfuscation
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
