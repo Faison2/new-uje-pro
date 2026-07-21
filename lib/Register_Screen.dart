@@ -17,15 +17,15 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen>
     with SingleTickerProviderStateMixin {
-  // ── CRDB Brand Colors ──────────────────────────────────
-  static const Color crdbGreen      = Color(0xFF3AAA35);
-  static const Color crdbDarkGreen  = Color(0xFF1E7A1A);
-  static const Color crdbMidGreen   = Color(0xFF2D9128);
-  static const Color crdbLightGreen = Color(0xFF57C752);
-  static const Color crdbBackground = Color(0xFFF2FAF2);
-  static const Color crdbSurface    = Color(0xFFFFFFFF);
-  static const Color crdbDivider    = Color(0xFFD4EDDA);
-  static const Color crdbTextDark   = Color(0xFF0D2B0C);
+  // ── Coop Bank Tanzania Brand Colors ───────────────────
+  static const Color coopGreen      = Color(0xFF3AA935);
+  static const Color coopDarkBlue   = Color(0xFF123B73);
+  static const Color coopMidBlue    = Color(0xFF1E5FB0);
+  static const Color coopLightGreen = Color(0xFF5FC257);
+  static const Color coopBackground = Color(0xFFF2F6FB);
+  static const Color coopSurface    = Color(0xFFFFFFFF);
+  static const Color coopDivider    = Color(0xFFD6E4F5);
+  static const Color coopTextDark   = Color(0xFF0D1F33);
 
   TextEditingController controller = TextEditingController();
   TextEditingController mobileNumberController = TextEditingController();
@@ -108,29 +108,29 @@ class _RegisterScreenState extends State<RegisterScreen>
       keyboardType: keyboardType,
       onChanged: onChanged,
       validator: validator,
-      style: const TextStyle(fontSize: 14, color: crdbTextDark),
+      style: const TextStyle(fontSize: 14, color: coopTextDark),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
         labelStyle:
-        TextStyle(color: crdbDarkGreen.withOpacity(0.7), fontSize: 13),
+        TextStyle(color: coopDarkBlue.withOpacity(0.7), fontSize: 13),
         filled: true,
-        fillColor: crdbSurface,
+        fillColor: coopSurface,
         contentPadding:
         const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide:
-          BorderSide(color: crdbDarkGreen.withOpacity(0.2)),
+          BorderSide(color: coopDarkBlue.withOpacity(0.2)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide:
-          BorderSide(color: crdbDarkGreen.withOpacity(0.25)),
+          BorderSide(color: coopDarkBlue.withOpacity(0.25)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: crdbDarkGreen, width: 1.5),
+          borderSide: const BorderSide(color: coopDarkBlue, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -147,11 +147,11 @@ class _RegisterScreenState extends State<RegisterScreen>
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: crdbSurface,
+        color: coopSurface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: crdbDarkGreen.withOpacity(0.07),
+            color: coopDarkBlue.withOpacity(0.07),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -164,12 +164,12 @@ class _RegisterScreenState extends State<RegisterScreen>
             padding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: crdbDarkGreen.withOpacity(0.06),
+              color: coopDarkBlue.withOpacity(0.06),
               borderRadius:
               const BorderRadius.vertical(top: Radius.circular(16)),
               border: Border(
                   bottom: BorderSide(
-                      color: crdbDarkGreen.withOpacity(0.1), width: 1)),
+                      color: coopDarkBlue.withOpacity(0.1), width: 1)),
             ),
             child: Row(
               children: [
@@ -177,7 +177,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                   width: 4,
                   height: 16,
                   decoration: BoxDecoration(
-                    color: crdbDarkGreen,
+                    color: coopDarkBlue,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -187,7 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: crdbDarkGreen,
+                    color: coopDarkBlue,
                     letterSpacing: 1.0,
                   ),
                 ),
@@ -206,9 +206,9 @@ class _RegisterScreenState extends State<RegisterScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: crdbBackground,
+      backgroundColor: coopBackground,
       appBar: AppBar(
-        backgroundColor: crdbDarkGreen,
+        backgroundColor: coopDarkBlue,
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
@@ -225,7 +225,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             height: 4,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [crdbLightGreen, crdbGreen],
+                colors: [coopLightGreen, coopGreen],
               ),
             ),
           ),
@@ -242,14 +242,14 @@ class _RegisterScreenState extends State<RegisterScreen>
                   vertical: 20, horizontal: 24),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [crdbDarkGreen, crdbMidGreen],
+                  colors: [coopDarkBlue, coopMidBlue],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: crdbDarkGreen.withOpacity(0.25),
+                    color: coopDarkBlue.withOpacity(0.25),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -260,7 +260,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                   // Logo
                   Container(
                     decoration: BoxDecoration(
-                      color: crdbSurface,
+                      color: coopSurface,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
@@ -294,10 +294,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: crdbGreen.withOpacity(0.2),
+                      color: coopGreen.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                          color: crdbGreen.withOpacity(0.5), width: 1),
+                          color: coopGreen.withOpacity(0.5), width: 1),
                     ),
                     child: const Text(
                       'Enter your CDS number to get started',
@@ -316,19 +316,19 @@ class _RegisterScreenState extends State<RegisterScreen>
 
             // ── CDS Search Card ───────────────────────
             _sectionCard(
-               title: 'SHAREHOLDER LOOKUP',
-               child: Column(
-                 children: [
-                   // 🔐 CDS Number - Using SecureTextField for keylogger protection
-                   SecureTextField(
-                     controller: controller,
-                     label: 'CDS Number',
-                     hint: 'Enter your CDS No.',
-                     onChanged: (_) => setState(() {
-                       hasSearched = false;
-                       _registrationFuture = null;
-                     }),
-                   ),
+              title: 'SHAREHOLDER LOOKUP',
+              child: Column(
+                children: [
+                  // 🔐 CDS Number - Using SecureTextField for keylogger protection
+                  SecureTextField(
+                    controller: controller,
+                    label: 'CDS Number',
+                    hint: 'Enter your CDS No.',
+                    onChanged: (_) => setState(() {
+                      hasSearched = false;
+                      _registrationFuture = null;
+                    }),
+                  ),
                   const SizedBox(height: 10),
 
                   // ── Name result from FutureBuilder ────
@@ -348,17 +348,17 @@ class _RegisterScreenState extends State<RegisterScreen>
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 14, vertical: 12),
                               decoration: BoxDecoration(
-                                color: crdbBackground,
+                                color: coopBackground,
                                 borderRadius:
                                 BorderRadius.circular(10),
                                 border: Border.all(
-                                    color: crdbGreen.withOpacity(0.35)),
+                                    color: coopGreen.withOpacity(0.35)),
                               ),
                               child: Row(
                                 children: [
                                   const Icon(
                                       Icons.person_pin_outlined,
-                                      color: crdbDarkGreen,
+                                      color: coopDarkBlue,
                                       size: 18),
                                   const SizedBox(width: 8),
                                   Expanded(
@@ -367,7 +367,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                       style: const TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
-                                        color: crdbDarkGreen,
+                                        color: coopDarkBlue,
                                       ),
                                     ),
                                   ),
@@ -440,7 +440,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                             fontSize: 15),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: crdbDarkGreen,
+                        backgroundColor: coopDarkBlue,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
                         elevation: 2,
@@ -481,14 +481,14 @@ class _RegisterScreenState extends State<RegisterScreen>
                           title: 'REGISTRATION DETAILS',
                           child: Column(
                             children: [
-                               // 🔐 TIN (Optional) - Using SecureTextField for keylogger protection
-                               SecureTextField(
-                                 controller: tinNumberController,
-                                 label: 'TIN Number (Optional)',
-                                 hint: 'Enter TIN No.',
-                                 keyboardType: TextInputType.number,
-                               ),
-                               const SizedBox(height: 12),
+                              // 🔐 TIN (Optional) - Using SecureTextField for keylogger protection
+                              SecureTextField(
+                                controller: tinNumberController,
+                                label: 'TIN Number (Optional)',
+                                hint: 'Enter TIN No.',
+                                keyboardType: TextInputType.number,
+                              ),
+                              const SizedBox(height: 12),
 
                               // Bank Dropdown
                               DropdownButtonFormField<String>(
@@ -497,10 +497,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                                   labelText: 'Select Bank',
                                   labelStyle: TextStyle(
                                       color:
-                                      crdbDarkGreen.withOpacity(0.7),
+                                      coopDarkBlue.withOpacity(0.7),
                                       fontSize: 13),
                                   filled: true,
-                                  fillColor: crdbSurface,
+                                  fillColor: coopSurface,
                                   contentPadding:
                                   const EdgeInsets.symmetric(
                                       horizontal: 14, vertical: 14),
@@ -508,27 +508,27 @@ class _RegisterScreenState extends State<RegisterScreen>
                                     borderRadius:
                                     BorderRadius.circular(10),
                                     borderSide: BorderSide(
-                                        color: crdbDarkGreen
+                                        color: coopDarkBlue
                                             .withOpacity(0.2)),
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius:
                                     BorderRadius.circular(10),
                                     borderSide: BorderSide(
-                                        color: crdbDarkGreen
+                                        color: coopDarkBlue
                                             .withOpacity(0.25)),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius:
                                     BorderRadius.circular(10),
                                     borderSide: const BorderSide(
-                                        color: crdbDarkGreen,
+                                        color: coopDarkBlue,
                                         width: 1.5),
                                   ),
                                 ),
                                 icon: const Icon(
                                     Icons.keyboard_arrow_down,
-                                    color: crdbDarkGreen),
+                                    color: coopDarkBlue),
                                 items: banks.map((item) {
                                   return DropdownMenuItem(
                                       value: item,
@@ -544,26 +544,26 @@ class _RegisterScreenState extends State<RegisterScreen>
                               ),
                               const SizedBox(height: 12),
 
-                               // 🔐 Mobile Number (Required) - Using SecureTextField for keylogger protection
-                               SecureTextField(
-                                 controller: mobileNumberController,
-                                 label: 'Mobile Number',
-                                 hint: 'e.g. 0712345678',
-                                 keyboardType: TextInputType.phone,
-                                 validator: (val) =>
-                                 (val == null || val.isEmpty)
-                                     ? 'Please enter a Mobile Number'
-                                     : null,
-                               ),
-                               const SizedBox(height: 12),
+                              // 🔐 Mobile Number (Required) - Using SecureTextField for keylogger protection
+                              SecureTextField(
+                                controller: mobileNumberController,
+                                label: 'Mobile Number',
+                                hint: 'e.g. 0712345678',
+                                keyboardType: TextInputType.phone,
+                                validator: (val) =>
+                                (val == null || val.isEmpty)
+                                    ? 'Please enter a Mobile Number'
+                                    : null,
+                              ),
+                              const SizedBox(height: 12),
 
-                               // 🔐 Account Number (Optional) - Using SecureTextField for keylogger protection
-                               SecureTextField(
-                                 controller: accountNumberController,
-                                 label: 'Account Number (Optional)',
-                                 hint: 'Enter account No.',
-                                 keyboardType: TextInputType.number,
-                               ),
+                              // 🔐 Account Number (Optional) - Using SecureTextField for keylogger protection
+                              SecureTextField(
+                                controller: accountNumberController,
+                                label: 'Account Number (Optional)',
+                                hint: 'Enter account No.',
+                                keyboardType: TextInputType.number,
+                              ),
                             ],
                           ),
                         ),
@@ -594,7 +594,7 @@ class _RegisterScreenState extends State<RegisterScreen>
 
             // Footer
             Text(
-              '© ${DateTime.now().year} CRDB Bank Plc',
+              '© ${DateTime.now().year} Coop Bank Tanzania',
               style: TextStyle(
                 fontSize: 11,
                 color: Colors.grey[400],
@@ -624,7 +624,7 @@ class _RegisterScreenState extends State<RegisterScreen>
           ),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: crdbDarkGreen,
+          backgroundColor: coopDarkBlue,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14)),
           elevation: 3,

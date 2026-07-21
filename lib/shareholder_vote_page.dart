@@ -19,15 +19,15 @@ class ShareholderVotePage extends StatefulWidget {
 
 class _ShareholderVotePageState extends State<ShareholderVotePage>
     with SingleTickerProviderStateMixin {
-  // ── CRDB Brand Colors ──────────────────────────────────
-  static const Color crdbGreen      = Color(0xFF3AAA35);
-  static const Color crdbDarkGreen  = Color(0xFF1E7A1A);
-  static const Color crdbMidGreen   = Color(0xFF2D9128);
-  static const Color crdbLightGreen = Color(0xFF57C752);
-  static const Color crdbBackground = Color(0xFFF2FAF2);
-  static const Color crdbSurface    = Color(0xFFFFFFFF);
-  static const Color crdbDivider    = Color(0xFFD4EDDA);
-  static const Color crdbTextDark   = Color(0xFF0D2B0C);
+  // ── Coop Bank Tanzania Brand Colors ───────────────────
+  static const Color coopGreen      = Color(0xFF3AA935);
+  static const Color coopDarkBlue   = Color(0xFF123B73);
+  static const Color coopMidBlue    = Color(0xFF1E5FB0);
+  static const Color coopLightGreen = Color(0xFF5FC257);
+  static const Color coopBackground = Color(0xFFF2F6FB);
+  static const Color coopSurface    = Color(0xFFFFFFFF);
+  static const Color coopDivider    = Color(0xFFD6E4F5);
+  static const Color coopTextDark   = Color(0xFF0D1F33);
 
   TextEditingController voterController = TextEditingController();
   String respRef = "";
@@ -88,7 +88,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
       msg: msg,
       toastLength: Toast.LENGTH_LONG,
       gravity: ToastGravity.BOTTOM,
-      backgroundColor: crdbDarkGreen,
+      backgroundColor: coopDarkBlue,
       textColor: Colors.white,
       fontSize: 14.0,
       timeInSecForIosWeb: 3,
@@ -253,9 +253,9 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
     final double bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      backgroundColor: crdbBackground,
+      backgroundColor: coopBackground,
       appBar: AppBar(
-        backgroundColor: crdbDarkGreen,
+        backgroundColor: coopDarkBlue,
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
@@ -272,7 +272,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
             height: 4,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [crdbLightGreen, crdbGreen],
+                colors: [coopLightGreen, coopGreen],
               ),
             ),
           ),
@@ -331,7 +331,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                       width: 4,
                       height: 16,
                       decoration: BoxDecoration(
-                        color: crdbGreen,
+                        color: coopGreen,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -341,7 +341,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: crdbGreen,
+                        color: coopGreen,
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -350,14 +350,14 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: crdbGreen.withOpacity(0.12),
+                        color: coopGreen.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         '${voterModel.resItem?.length ?? 0} items',
                         style: const TextStyle(
                           fontSize: 11,
-                          color: crdbGreen,
+                          color: coopGreen,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -397,11 +397,11 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
   Widget _buildSearchCard() {
     return Container(
       decoration: BoxDecoration(
-        color: crdbSurface,
+        color: coopSurface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: crdbDarkGreen.withOpacity(0.08),
+            color: coopDarkBlue.withOpacity(0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -415,12 +415,12 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
             padding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: crdbDarkGreen.withOpacity(0.06),
+              color: coopDarkBlue.withOpacity(0.06),
               borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(16)),
               border: Border(
                   bottom: BorderSide(
-                      color: crdbDarkGreen.withOpacity(0.1), width: 1)),
+                      color: coopDarkBlue.withOpacity(0.1), width: 1)),
             ),
             child: Row(
               children: [
@@ -428,7 +428,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                   width: 4,
                   height: 16,
                   decoration: BoxDecoration(
-                    color: crdbDarkGreen,
+                    color: coopDarkBlue,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -438,7 +438,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: crdbDarkGreen,
+                    color: coopDarkBlue,
                     letterSpacing: 1.0,
                   ),
                 ),
@@ -453,33 +453,33 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                 TextFormField(
                   controller: voterController,
                   style:
-                  const TextStyle(fontSize: 14, color: crdbTextDark),
+                  const TextStyle(fontSize: 14, color: coopTextDark),
                   decoration: InputDecoration(
                     labelText: 'CDS Number',
                     hintText: 'Enter your CDS No.',
                     labelStyle: TextStyle(
-                        color: crdbDarkGreen.withOpacity(0.7),
+                        color: coopDarkBlue.withOpacity(0.7),
                         fontSize: 13),
                     prefixIcon: const Icon(Icons.badge_outlined,
-                        color: crdbDarkGreen, size: 20),
+                        color: coopDarkBlue, size: 20),
                     filled: true,
-                    fillColor: crdbBackground,
+                    fillColor: coopBackground,
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 14),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                          color: crdbDarkGreen.withOpacity(0.2)),
+                          color: coopDarkBlue.withOpacity(0.2)),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                          color: crdbDarkGreen.withOpacity(0.25)),
+                          color: coopDarkBlue.withOpacity(0.25)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: const BorderSide(
-                          color: crdbDarkGreen, width: 1.5),
+                          color: coopDarkBlue, width: 1.5),
                     ),
                   ),
                 ),
@@ -499,7 +499,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15)),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: crdbDarkGreen,
+                            backgroundColor: coopDarkBlue,
                             shape: RoundedRectangleBorder(
                                 borderRadius:
                                 BorderRadius.circular(10)),
@@ -554,14 +554,14 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [crdbDarkGreen, crdbMidGreen],
+          colors: [coopDarkBlue, coopMidBlue],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: crdbDarkGreen.withOpacity(0.25),
+            color: coopDarkBlue.withOpacity(0.25),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -712,16 +712,16 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: crdbSurface,
+        color: coopSurface,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: crdbDarkGreen.withOpacity(0.07),
+            color: coopDarkBlue.withOpacity(0.07),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: crdbDivider),
+        border: Border.all(color: coopDivider),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -736,7 +736,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                   width: 30,
                   height: 30,
                   decoration: const BoxDecoration(
-                    color: crdbDarkGreen,
+                    color: coopDarkBlue,
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -751,14 +751,14 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                   ),
                 ),
                 const SizedBox(width: 8),
-                _chip('Res. $resNumber', crdbDarkGreen, crdbBackground),
+                _chip('Res. $resNumber', coopDarkBlue, coopBackground),
                 const SizedBox(width: 6),
                 _chip(
                   isNormal ? 'Normal' : 'Election',
-                  isNormal ? Colors.green[700]! : crdbMidGreen,
+                  isNormal ? Colors.green[700]! : coopMidBlue,
                   isNormal
                       ? Colors.green.withOpacity(0.1)
-                      : crdbGreen.withOpacity(0.12),
+                      : coopGreen.withOpacity(0.12),
                 ),
                 if (resExistingVote.isNotEmpty &&
                     resExistingVote != "0") ...[
@@ -782,7 +782,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
               voteDetails,
               style: const TextStyle(
                 fontSize: 14,
-                color: crdbTextDark,
+                color: coopTextDark,
                 height: 1.4,
                 fontWeight: FontWeight.w500,
               ),
@@ -873,7 +873,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                 handleNormalResVote(cdsString, resNumber, vote);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: crdbDarkGreen,
+                backgroundColor: coopDarkBlue,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
                 elevation: 2,
@@ -956,7 +956,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
           ),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: crdbGreen,
+          backgroundColor: coopGreen,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10)),
           elevation: 2,
@@ -993,7 +993,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
             resolution,
             style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                color: crdbDarkGreen,
+                color: coopDarkBlue,
                 fontSize: 15),
           ),
           content: SizedBox(
@@ -1016,7 +1016,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
           actions: [
             OutlinedButton(
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: crdbDarkGreen.withOpacity(0.4)),
+                side: BorderSide(color: coopDarkBlue.withOpacity(0.4)),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)),
               ),
@@ -1025,7 +1025,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
                 Navigator.pop(context, true);
               },
               child: const Text('Close',
-                  style: TextStyle(color: crdbDarkGreen)),
+                  style: TextStyle(color: coopDarkBlue)),
             ),
           ],
         );
@@ -1047,11 +1047,11 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: hasVoted ? crdbBackground : crdbSurface,
+        color: hasVoted ? coopBackground : coopSurface,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color:
-          hasVoted ? crdbGreen.withOpacity(0.3) : crdbDivider,
+          hasVoted ? coopGreen.withOpacity(0.3) : coopDivider,
         ),
       ),
       child: Row(
@@ -1061,7 +1061,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
             height: 36,
             decoration: BoxDecoration(
               color: hasVoted
-                  ? crdbDarkGreen
+                  ? coopDarkBlue
                   : Colors.grey.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
@@ -1078,7 +1078,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: hasVoted ? crdbDarkGreen : crdbTextDark,
+                color: hasVoted ? coopDarkBlue : coopTextDark,
               ),
             ),
           ),
@@ -1100,7 +1100,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                hasVoted ? Colors.green[600] : crdbDarkGreen,
+                hasVoted ? Colors.green[600] : coopDarkBlue,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)),
                 elevation: hasVoted ? 0 : 2,
@@ -1121,7 +1121,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
             height: 34,
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: crdbGreen, width: 1.2),
+                side: BorderSide(color: coopGreen, width: 1.2),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)),
                 padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -1134,7 +1134,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
               child: Text(
                 'Recast',
                 style: TextStyle(
-                    color: crdbMidGreen,
+                    color: coopMidBlue,
                     fontSize: 12,
                     fontWeight: FontWeight.bold),
               ),

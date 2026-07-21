@@ -26,15 +26,16 @@ class _HomeScreenState extends State<HomeScreen>
   late Animation<double> _headerFade;
   late Animation<double> _pulseAnim;
 
-  // ── CRDB Brand Palette ──────────────────────────────────
-  static const Color crdbGreen       = Color(0xFF3AAA35);   // Primary CRDB green
-  static const Color crdbDarkGreen   = Color(0xFF1E7A1A);   // Deep forest green
-  static const Color crdbMidGreen    = Color(0xFF2D9128);   // Mid-tone green
-  static const Color crdbLightGreen  = Color(0xFF57C752);   // Highlight green
-  static const Color crdbBackground  = Color(0xFFF2FAF2);   // Soft green-white
-  static const Color crdbSurface     = Color(0xFFFFFFFF);   // Pure white
-  static const Color crdbDivider     = Color(0xFFD4EDDA);   // Soft green divider
-  static const Color crdbTextDark    = Color(0xFF0D2B0C);   // Near-black green text
+  // ── Coop Bank Tanzania Brand Palette ────────────────────
+  static const Color coopBlue        = Color(0xFF1B4F9C);   // Primary Coop blue
+  static const Color coopDarkBlue    = Color(0xFF123B73);   // Deep navy blue
+  static const Color coopMidBlue     = Color(0xFF1E5FB0);   // Mid-tone blue
+  static const Color coopGreen       = Color(0xFF3AA935);   // Primary Coop green (handshake)
+  static const Color coopLightGreen  = Color(0xFF5FC257);   // Highlight green
+  static const Color coopBackground  = Color(0xFFF2F6FB);   // Soft blue-white
+  static const Color coopSurface     = Color(0xFFFFFFFF);   // Pure white
+  static const Color coopDivider     = Color(0xFFD6E4F5);   // Soft blue divider
+  static const Color coopTextDark    = Color(0xFF0D1F33);   // Near-black blue text
 
   @override
   void initState() {
@@ -112,11 +113,11 @@ class _HomeScreenState extends State<HomeScreen>
         child: Container(
           padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
-            color: crdbSurface,
+            color: coopSurface,
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: crdbDarkGreen.withOpacity(0.15),
+                color: coopDarkBlue.withOpacity(0.15),
                 blurRadius: 40,
                 offset: const Offset(0, 16),
               ),
@@ -141,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen>
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
-                  color: crdbDarkGreen,
+                  color: coopDarkBlue,
                   letterSpacing: -0.3,
                 ),
               ),
@@ -211,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen>
     return PopScope(
       onPopInvoked: (popped) => _onWillPop(),
       child: Scaffold(
-        backgroundColor: crdbBackground,
+        backgroundColor: coopBackground,
         body: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
@@ -242,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                     const SizedBox(width: 10),
                     const Text(
-                      'CRDB BANK',
+                      'COOP BANK',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
@@ -253,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen>
                   ],
                 ),
               ),
-              backgroundColor: crdbDarkGreen,
+              backgroundColor: coopDarkBlue,
             ),
 
             // ── Welcome Banner ───────────────────────────
@@ -266,14 +267,14 @@ class _HomeScreenState extends State<HomeScreen>
                       horizontal: 20, vertical: 14),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [crdbDarkGreen, crdbMidGreen],
+                      colors: [coopDarkBlue, coopMidBlue],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     ),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: crdbDarkGreen.withOpacity(0.3),
+                        color: coopDarkBlue.withOpacity(0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
@@ -327,11 +328,11 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // — Shareholder Section —
+                    // — Shareholder Section (Blue) —
                     _SectionHeader(
                       label: 'SHAREHOLDER SERVICES',
                       icon: Icons.people_alt_rounded,
-                      color: crdbDarkGreen,
+                      color: coopDarkBlue,
                     ),
                     const SizedBox(height: 14),
                     Row(
@@ -345,10 +346,10 @@ class _HomeScreenState extends State<HomeScreen>
                                 icon: Icons.how_to_reg_rounded,
                                 label: 'Shareholder\nRegistration',
                                 description: 'Register as a member',
-                                accentColor: crdbDarkGreen,
+                                accentColor: coopDarkBlue,
                                 gradientColors: const [
-                                  Color(0xFF1E7A1A),
-                                  Color(0xFF2D9128),
+                                  Color(0xFF123B73),
+                                  Color(0xFF1B4F9C),
                                 ],
                                 onTap: () => Navigator.push(
                                   context,
@@ -368,10 +369,10 @@ class _HomeScreenState extends State<HomeScreen>
                                 icon: Icons.how_to_vote_rounded,
                                 label: 'Shareholder\nVoting',
                                 description: 'Cast your vote',
-                                accentColor: crdbDarkGreen,
+                                accentColor: coopDarkBlue,
                                 gradientColors: const [
-                                  Color(0xFF2D9128),
-                                  Color(0xFF3AAA35),
+                                  Color(0xFF1B4F9C),
+                                  Color(0xFF1E5FB0),
                                 ],
                                 onTap: () => Navigator.push(
                                   context,
@@ -386,11 +387,11 @@ class _HomeScreenState extends State<HomeScreen>
 
                     const SizedBox(height: 32),
 
-                    // — Proxy Section —
+                    // — Proxy Section (Green) —
                     _SectionHeader(
                       label: 'PROXY SERVICES',
                       icon: Icons.manage_accounts_rounded,
-                      color: crdbMidGreen,
+                      color: coopGreen,
                     ),
                     const SizedBox(height: 14),
                     Row(
@@ -404,10 +405,10 @@ class _HomeScreenState extends State<HomeScreen>
                                 icon: Icons.person_add_alt_1_rounded,
                                 label: 'Proxy\nRegistration',
                                 description: 'Add a proxy member',
-                                accentColor: crdbMidGreen,
+                                accentColor: coopGreen,
                                 gradientColors: const [
-                                  Color(0xFF3AAA35),
-                                  Color(0xFF57C752),
+                                  Color(0xFF2E8C2A),
+                                  Color(0xFF3AA935),
                                 ],
                                 onTap: () => Navigator.push(
                                   context,
@@ -427,10 +428,10 @@ class _HomeScreenState extends State<HomeScreen>
                                 icon: Icons.ballot_rounded,
                                 label: 'Proxy\nVoting',
                                 description: 'Vote on behalf',
-                                accentColor: crdbMidGreen,
+                                accentColor: coopGreen,
                                 gradientColors: const [
-                                  Color(0xFF57C752),
-                                  Color(0xFF7DD978),
+                                  Color(0xFF3AA935),
+                                  Color(0xFF5FC257),
                                 ],
                                 onTap: () => Navigator.push(
                                   context,
@@ -446,7 +447,7 @@ class _HomeScreenState extends State<HomeScreen>
                     const SizedBox(height: 40),
 
                     // — Footer —
-                    Divider(color: crdbDivider, thickness: 1),
+                    Divider(color: coopDivider, thickness: 1),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -455,7 +456,7 @@ class _HomeScreenState extends State<HomeScreen>
                             size: 12, color: Colors.grey[400]),
                         const SizedBox(width: 4),
                         Text(
-                          '${DateTime.now().year} CRDB Bank Plc',
+                          '${DateTime.now().year} Coop Bank Tanzania',
                           style: TextStyle(
                             fontSize: 11,
                             color: Colors.grey[400],
@@ -467,10 +468,10 @@ class _HomeScreenState extends State<HomeScreen>
                     const SizedBox(height: 4),
                     Center(
                       child: Text(
-                        'The bank that listens',
+                        'Together we grow',
                         style: TextStyle(
                           fontSize: 10,
-                          color: crdbGreen.withOpacity(0.6),
+                          color: coopGreen.withOpacity(0.6),
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.w600,
                         ),
@@ -520,10 +521,10 @@ class _HeaderBackground extends StatelessWidget {
     required this.headerFade,
   });
 
-  // CRDB colors referenced locally
-  static const Color crdbDarkGreen  = Color(0xFF1E7A1A);
-  static const Color crdbGreen      = Color(0xFF3AAA35);
-  static const Color crdbLightGreen = Color(0xFF57C752);
+  // Coop Bank colors referenced locally
+  static const Color coopDarkBlue  = Color(0xFF123B73);
+  static const Color coopBlue      = Color(0xFF1B4F9C);
+  static const Color coopMidBlue   = Color(0xFF1E5FB0);
 
   @override
   Widget build(BuildContext context) {
@@ -533,9 +534,9 @@ class _HeaderBackground extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF0D4A0A),   // Very dark green
-            Color(0xFF1E7A1A),   // Dark CRDB green
-            Color(0xFF3AAA35),   // Primary CRDB green
+            Color(0xFF0A2A54),   // Very dark navy
+            Color(0xFF123B73),   // Deep Coop blue
+            Color(0xFF1B4F9C),   // Primary Coop blue
           ],
           stops: [0.0, 0.5, 1.0],
         ),
@@ -587,23 +588,23 @@ class _HeaderBackground extends StatelessWidget {
               ),
             ),
           ),
-          // Bottom-left soft circle
+          // Bottom-left soft circle — green tint for brand contrast
           Positioned(
             bottom: -20,
             left: -30,
             child: Opacity(
-              opacity: 0.05,
+              opacity: 0.10,
               child: Container(
                 width: 160,
                 height: 160,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white,
+                  color: Color(0xFF3AA935),
                 ),
               ),
             ),
           ),
-          // CRDB green stripe accent at bottom — replaces gold line
+          // Coop green stripe accent at bottom
           Positioned(
             bottom: 0,
             left: 0,
@@ -614,14 +615,14 @@ class _HeaderBackground extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: [
                     Colors.transparent,
-                    Colors.white,
+                    Color(0xFF5FC257),
                     Colors.transparent,
                   ],
                 ),
               ),
             ),
           ),
-          // Three horizontal stripes (CRDB brand mark motif) — bottom right
+          // Three horizontal stripes — bottom right
           Positioned(
             bottom: 30,
             right: 20,
@@ -696,7 +697,7 @@ class _HeaderBackground extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'CRDB BANK PLC',
+                    'COOP BANK TANZANIA',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -715,7 +716,7 @@ class _HeaderBackground extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       const Text(
-                        'The bank that listens',
+                        'Together we grow',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 11,
@@ -904,7 +905,7 @@ class _ServiceCardState extends State<_ServiceCard>
                     ),
                   ),
                 ),
-                // CRDB stripe motif — bottom right corner
+                // Stripe motif — bottom right corner
                 Positioned(
                   bottom: 14,
                   right: 14,

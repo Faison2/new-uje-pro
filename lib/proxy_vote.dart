@@ -25,15 +25,15 @@ class ProxyVotePage extends StatefulWidget {
 
 class _ProxyVotePageState extends State<ProxyVotePage>
     with SingleTickerProviderStateMixin {
-  // ── CRDB Brand Colors ──────────────────────────────────
-  static const Color crdbGreen      = Color(0xFF3AAA35);
-  static const Color crdbDarkGreen  = Color(0xFF1E7A1A);
-  static const Color crdbMidGreen   = Color(0xFF2D9128);
-  static const Color crdbLightGreen = Color(0xFF57C752);
-  static const Color crdbBackground = Color(0xFFF2FAF2);
-  static const Color crdbSurface    = Color(0xFFFFFFFF);
-  static const Color crdbDivider    = Color(0xFFD4EDDA);
-  static const Color crdbTextDark   = Color(0xFF0D2B0C);
+  // ── Coop Bank Tanzania Brand Colors ───────────────────
+  static const Color coopGreen      = Color(0xFF3AA935);
+  static const Color coopDarkBlue   = Color(0xFF123B73);
+  static const Color coopMidBlue    = Color(0xFF1E5FB0);
+  static const Color coopLightGreen = Color(0xFF5FC257);
+  static const Color coopBackground = Color(0xFFF2F6FB);
+  static const Color coopSurface    = Color(0xFFFFFFFF);
+  static const Color coopDivider    = Color(0xFFD6E4F5);
+  static const Color coopTextDark   = Color(0xFF0D1F33);
 
   TextEditingController voterController = TextEditingController();
   String respRef = "";
@@ -256,7 +256,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
       String cdsNumber, String resNumber, String voteType) async {
     String urlVoteNormalRes = "$baseApiUrl/CommitVoteNormalRes";
     final deviceInfo = await _getDeviceInfo();
-    
+
     final response = await http.post(
       Uri.parse(urlVoteNormalRes),
       body: {
@@ -315,7 +315,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
       String resolutionSEQ, String proxyNumber, String voteType) async {
     String urlVoteNormalResAll = "$baseApiUrl/CommitVoteNormalResALL";
     final deviceInfo = await _getDeviceInfo();
-    
+
     final response = await http.post(
       Uri.parse(urlVoteNormalResAll),
       body: {
@@ -344,7 +344,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
       String orderNumber, String voteType) async {
     String urlVoteNormalResAll = "$baseApiUrl/VoteForProxyResElectALL";
     final deviceInfo = await _getDeviceInfo();
-    
+
     final response = await http.post(
       Uri.parse(urlVoteNormalResAll),
       body: {
@@ -370,60 +370,60 @@ class _ProxyVotePageState extends State<ProxyVotePage>
     context.loaderOverlay.hide();
   }
 
-   // ── Helper ────────────────────────────────────────────
+  // ── Helper ────────────────────────────────────────────
 
-   Future<Map<String, String>> _getDeviceInfo() async {
-     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-     Map<String, String> info = {};
-     try {
-       if (Platform.isAndroid) {
-         AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-         info = {
-           'platform': 'Android',
-           'model': androidInfo.model ?? 'Unknown',
-           'osVersion': androidInfo.version.release ?? 'Unknown',
-           'deviceId': androidInfo.id ?? 'unknown',
-         };
-       } else if (Platform.isIOS) {
-         IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-         info = {
-           'platform': 'iOS',
-           'model': iosInfo.model ?? 'Unknown',
-           'osVersion': iosInfo.systemVersion ?? 'Unknown',
-           'deviceId': iosInfo.identifierForVendor ?? 'unknown',
-         };
-       }
-     } catch (e) {
-       debugPrint('Device info error: $e');
-     }
-      return info;
+  Future<Map<String, String>> _getDeviceInfo() async {
+    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    Map<String, String> info = {};
+    try {
+      if (Platform.isAndroid) {
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        info = {
+          'platform': 'Android',
+          'model': androidInfo.model ?? 'Unknown',
+          'osVersion': androidInfo.version.release ?? 'Unknown',
+          'deviceId': androidInfo.id ?? 'unknown',
+        };
+      } else if (Platform.isIOS) {
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        info = {
+          'platform': 'iOS',
+          'model': iosInfo.model ?? 'Unknown',
+          'osVersion': iosInfo.systemVersion ?? 'Unknown',
+          'deviceId': iosInfo.identifierForVendor ?? 'unknown',
+        };
+      }
+    } catch (e) {
+      debugPrint('Device info error: $e');
     }
+    return info;
+  }
 
-    void _showToast(String msg) {
-      Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: crdbDarkGreen,
-        textColor: Colors.white,
-        fontSize: 14.0,
-        timeInSecForIosWeb: 3,
-      );
-    }
+  void _showToast(String msg) {
+    Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: coopDarkBlue,
+      textColor: Colors.white,
+      fontSize: 14.0,
+      timeInSecForIosWeb: 3,
+    );
+  }
 
-    void _clearAll() {
-      setState(() {
-        isVisible = false;
-        resolutions.clear();
-        voterController.text = "";
-        cdsString = "";
-        meetingInfo = "";
-        name = "";
-        shares = "";
-        regStatus = "";
-        company = "";
-      });
-    }
+  void _clearAll() {
+    setState(() {
+      isVisible = false;
+      resolutions.clear();
+      voterController.text = "";
+      cdsString = "";
+      meetingInfo = "";
+      name = "";
+      shares = "";
+      regStatus = "";
+      company = "";
+    });
+  }
 
 
   // ── Build ─────────────────────────────────────────────
@@ -432,9 +432,9 @@ class _ProxyVotePageState extends State<ProxyVotePage>
   Widget build(BuildContext context) {
     voteCode = respRef;
     return Scaffold(
-      backgroundColor: crdbBackground,
+      backgroundColor: coopBackground,
       appBar: AppBar(
-        backgroundColor: crdbDarkGreen,
+        backgroundColor: coopDarkBlue,
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
@@ -451,7 +451,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
             height: 4,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [crdbLightGreen, crdbGreen],
+                colors: [coopLightGreen, coopGreen],
               ),
             ),
           ),
@@ -465,11 +465,11 @@ class _ProxyVotePageState extends State<ProxyVotePage>
             // ── Search Card ───────────────────────────
             Container(
               decoration: BoxDecoration(
-                color: crdbSurface,
+                color: coopSurface,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: crdbDarkGreen.withOpacity(0.08),
+                    color: coopDarkBlue.withOpacity(0.08),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -483,12 +483,12 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                      color: crdbDarkGreen.withOpacity(0.06),
+                      color: coopDarkBlue.withOpacity(0.06),
                       borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(16)),
                       border: Border(
                           bottom: BorderSide(
-                              color: crdbDarkGreen.withOpacity(0.1),
+                              color: coopDarkBlue.withOpacity(0.1),
                               width: 1)),
                     ),
                     child: Row(
@@ -497,7 +497,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                           width: 4,
                           height: 16,
                           decoration: BoxDecoration(
-                            color: crdbDarkGreen,
+                            color: coopDarkBlue,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -507,7 +507,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: crdbDarkGreen,
+                            color: coopDarkBlue,
                             letterSpacing: 1.0,
                           ),
                         ),
@@ -522,35 +522,35 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                         TextFormField(
                           controller: voterController,
                           style: const TextStyle(
-                              fontSize: 14, color: crdbTextDark),
+                              fontSize: 14, color: coopTextDark),
                           decoration: InputDecoration(
                             labelText: 'Proxy CDS Number',
                             hintText: 'Enter your proxy CDS No.',
                             labelStyle: TextStyle(
-                                color: crdbDarkGreen.withOpacity(0.7),
+                                color: coopDarkBlue.withOpacity(0.7),
                                 fontSize: 13),
                             prefixIcon: const Icon(
                                 Icons.badge_outlined,
-                                color: crdbDarkGreen,
+                                color: coopDarkBlue,
                                 size: 20),
                             filled: true,
-                            fillColor: crdbBackground,
+                            fillColor: coopBackground,
                             contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 14, vertical: 14),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(
-                                  color: crdbDarkGreen.withOpacity(0.2)),
+                                  color: coopDarkBlue.withOpacity(0.2)),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(
-                                  color: crdbDarkGreen.withOpacity(0.25)),
+                                  color: coopDarkBlue.withOpacity(0.25)),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: const BorderSide(
-                                  color: crdbDarkGreen, width: 1.5),
+                                  color: coopDarkBlue, width: 1.5),
                             ),
                           ),
                         ),
@@ -570,7 +570,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15)),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: crdbDarkGreen,
+                                    backgroundColor: coopDarkBlue,
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
                                         BorderRadius.circular(10)),
@@ -626,14 +626,14 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                     horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [crdbDarkGreen, crdbMidGreen],
+                    colors: [coopDarkBlue, coopMidBlue],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(14),
                   boxShadow: [
                     BoxShadow(
-                      color: crdbDarkGreen.withOpacity(0.25),
+                      color: coopDarkBlue.withOpacity(0.25),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -682,10 +682,10 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: crdbGreen.withOpacity(0.25),
+                        color: coopGreen.withOpacity(0.25),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                            color: crdbGreen.withOpacity(0.5)),
+                            color: coopGreen.withOpacity(0.5)),
                       ),
                       child: Row(
                         children: [
@@ -717,7 +717,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                     width: 4,
                     height: 16,
                     decoration: BoxDecoration(
-                      color: crdbGreen,
+                      color: coopGreen,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -727,7 +727,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: crdbGreen,
+                      color: coopGreen,
                       letterSpacing: 1.0,
                     ),
                   ),
@@ -780,16 +780,16 @@ class _ProxyVotePageState extends State<ProxyVotePage>
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: crdbSurface,
+        color: coopSurface,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: crdbDarkGreen.withOpacity(0.07),
+            color: coopDarkBlue.withOpacity(0.07),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: crdbDivider),
+        border: Border.all(color: coopDivider),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -804,7 +804,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                   width: 30,
                   height: 30,
                   decoration: const BoxDecoration(
-                    color: crdbDarkGreen,
+                    color: coopDarkBlue,
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -824,7 +824,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: crdbBackground,
+                    color: coopBackground,
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -832,7 +832,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                     style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: crdbDarkGreen,
+                      color: coopDarkBlue,
                     ),
                   ),
                 ),
@@ -843,7 +843,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                       horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: isElection
-                        ? crdbGreen.withOpacity(0.12)
+                        ? coopGreen.withOpacity(0.12)
                         : Colors.green.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
@@ -852,7 +852,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: isElection ? crdbMidGreen : Colors.green[700],
+                      color: isElection ? coopMidBlue : Colors.green[700],
                     ),
                   ),
                 ),
@@ -864,7 +864,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
               voteDetails,
               style: const TextStyle(
                 fontSize: 14,
-                color: crdbTextDark,
+                color: coopTextDark,
                 height: 1.4,
                 fontWeight: FontWeight.w500,
               ),
@@ -887,7 +887,7 @@ class _ProxyVotePageState extends State<ProxyVotePage>
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: crdbDarkGreen,
+                  backgroundColor: coopDarkBlue,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                   elevation: 2,
