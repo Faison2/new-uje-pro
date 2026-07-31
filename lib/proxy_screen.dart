@@ -828,13 +828,10 @@ class _ProxyPageState extends State<ProxyPage> {
                           phoneNumber,
                           shareholderProxyCDS,
                           context);
-                      Future.delayed(
-                          const Duration(milliseconds: 400), () {
-                        if (proxyNumb != "") {
-                          _showProxyNumberDialog(context, proxyNumb);
-                        }
-                      });
-                      // Clear everything only on final registration
+                      if (proxyNumb != "") {
+                        await _showProxyNumberDialog(context, proxyNumb);
+                      }
+                      // Clear everything only after dialog is dismissed
                       setState(() {
                         cdsNumberController.text = "";
                         shareHolderController.text = "";
@@ -843,6 +840,7 @@ class _ProxyPageState extends State<ProxyPage> {
                         mobileNumberController.text = "";
                         data.clear();
                       });
+                      registrationKey2.currentState?.reset();
                     }
                   },
                   child: const Row(

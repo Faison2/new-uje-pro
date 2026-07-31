@@ -194,7 +194,7 @@ class _ShareholderVotePageState extends State<ShareholderVotePage>
       _showToast(responseJson[0]["responseMessage"]);
     }
     context.loaderOverlay.hide();
-    _clearAll();
+    getResolutions(cdsNo);
   }
 
   getCandidateList(String resoNumber, String cdsNo) async {

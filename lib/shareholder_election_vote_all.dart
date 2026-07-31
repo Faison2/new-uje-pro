@@ -324,7 +324,7 @@ class _ShareholderElectionVoteScreenState
 
           // ── Submit Button ─────────────────────────
           Container(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 24 + MediaQuery.of(context).padding.bottom),
             decoration: BoxDecoration(
               color: crdbSurface,
               boxShadow: [

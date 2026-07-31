@@ -218,13 +218,41 @@ Future<void> submitVote(
   httpErrorHandler(
       response: response,
       context: context,
-      onSuccess: () {
+      onSuccess: () async {
         context.loaderOverlay.hide();
         debugPrint(response.body);
         final responseJson = jsonDecode(response.body);
         if (responseJson[0]["responseCode"] == 0) {
-          showToast(context, responseJson[0]["responseMessage"]);
-          Navigator.pop(context);
+          await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (ctx) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              title: const Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.green, size: 28),
+                  SizedBox(width: 8),
+                  Text('Vote Completed',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                ],
+              ),
+              content: Text(responseJson[0]["responseMessage"] ?? "Your vote has been submitted successfully."),
+              actions: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1E7A1A),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('OK',
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+          );
+          if (context.mounted) Navigator.pop(context);
         } else {
           showToast(context, responseJson[0]["responseMessage"]);
         }
